@@ -1,6 +1,7 @@
 /**
  * MargSetu (मार्गसेतु) - Citizen Highway Advisory, Journey Panel & Offline Queue (Phase 1, 2, 3, & 4)
  * Floating frosted-glass panel with tabbed navigation, dynamic routing, and IndexedDB Store & Forward sync queue.
+ * Responsive for both desktop sidebar and mobile bottom-sheet integration.
  */
 
 import React, { useState } from 'react';
@@ -21,23 +22,27 @@ import {
   WifiOff
 } from 'lucide-react';
 
-export default function CitizenInfoPanel({ className = "" }) {
+export default function CitizenInfoPanel({ className = "", isMobile = false }) {
   const { roads, selectedRoadId, setSelectedRoadId, lastUpdated, syncStatus, isOnline, offlineQueue } = useRoads();
   const [activeTab, setActiveTab] = useState('planner'); // 'planner' | 'highways'
 
   return (
-    <aside className={`bg-white/92 backdrop-blur-2xl border border-slate-200/90 rounded-3xl p-4 sm:p-5 shadow-glass-hover flex flex-col gap-3 font-sans max-h-[calc(100vh-100px)] ${className}`}>
+    <aside className={`${
+      isMobile 
+        ? 'w-full flex flex-col gap-3 font-sans' 
+        : `bg-white/92 backdrop-blur-2xl border border-slate-200/90 rounded-3xl p-4 sm:p-5 shadow-glass-hover flex flex-col gap-3 font-sans max-h-[calc(100vh-100px)] ${className}`
+    }`}>
       
-      {/* 1. Header with Live Status Indicator */}
-      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center shadow-md border border-slate-200/80 flex-shrink-0">
+      {/* 1. Header with Live Status Indicator (Shown on desktop or mobile) */}
+      <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white p-1 flex items-center justify-center shadow-md border border-slate-200/80 flex-shrink-0">
             <img src="/logo.svg" alt="MargSetu Logo" className="w-full h-full object-contain" />
           </div>
           <div>
-            <h2 className="font-extrabold text-sm text-slate-900 leading-tight flex items-center gap-1.5">
+            <h2 className="font-extrabold text-xs sm:text-sm text-slate-900 leading-tight flex items-center gap-1.5">
               <span>MargSetu Navigator</span>
-              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/60">
+              <span className="text-[9px] sm:text-[10px] font-bold px-1.5 py-0.2 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/60">
                 v4.0
               </span>
             </h2>
@@ -53,7 +58,7 @@ export default function CitizenInfoPanel({ className = "" }) {
             : 'bg-amber-50 text-amber-800 border-amber-300'
         }`}>
           <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-          <span>{isOnline ? 'Govt Live Sync' : 'Store & Forward'}</span>
+          <span>{isOnline ? 'Govt Live Sync' : 'Offline / SMS'}</span>
         </div>
       </div>
 
@@ -64,7 +69,7 @@ export default function CitizenInfoPanel({ className = "" }) {
       <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100/80 rounded-2xl border border-slate-200/60">
         <button
           onClick={() => setActiveTab('planner')}
-          className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-xs font-bold transition-all ${
+          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'planner'
               ? 'bg-white text-indigo-700 shadow-sm'
               : 'text-slate-500 hover:text-slate-800'
@@ -76,7 +81,7 @@ export default function CitizenInfoPanel({ className = "" }) {
 
         <button
           onClick={() => setActiveTab('highways')}
-          className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-xs font-bold transition-all ${
+          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'highways'
               ? 'bg-white text-indigo-700 shadow-sm'
               : 'text-slate-500 hover:text-slate-800'
@@ -88,7 +93,7 @@ export default function CitizenInfoPanel({ className = "" }) {
       </div>
 
       {/* 3. Tab Contents */}
-      <div className="overflow-y-auto pr-1 flex-1 space-y-3">
+      <div className="overflow-y-auto pr-1 flex-1 space-y-3 max-h-[50vh] sm:max-h-none">
         {activeTab === 'planner' ? (
           /* Journey Planner with Detour Logic and Delay Impact (Phase 2) */
           <JourneyPlanner />
@@ -131,7 +136,7 @@ export default function CitizenInfoPanel({ className = "" }) {
                       : 'bg-white/80 border-slate-200/80 hover:border-slate-300 hover:bg-slate-50/50'
                   }`}
                 >
-                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <div className="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
                     <div className="flex items-center gap-2">
                       <span className="font-extrabold text-xs text-slate-900 px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
                         {road.highway_code}
@@ -171,7 +176,7 @@ export default function CitizenInfoPanel({ className = "" }) {
       <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
         <div className="flex items-center gap-1">
           <Info className="w-3 h-3" />
-          <span>{isOnline ? 'Online Mesh Active' : 'IndexedDB Store & Forward'}</span>
+          <span>{isOnline ? 'Online Mesh Active' : 'Offline Mode'}</span>
         </div>
         <span>Sync: {lastUpdated.toLocaleTimeString()}</span>
       </div>

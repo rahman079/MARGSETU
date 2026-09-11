@@ -1,6 +1,7 @@
 /**
  * MargSetu (मार्गसेतु) - Government Control Panel & Sentinel Command (Phase 1 + Phase 3)
  * Frosted-glass command center with tabbed switching between Highway Corridors and Live Citizen Field Reports.
+ * Fully responsive for both desktop floating sidebar and mobile bottom-sheet integration.
  */
 
 import React, { useState } from 'react';
@@ -22,7 +23,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function GovControlPanel({ className = "" }) {
+export default function GovControlPanel({ className = "", isMobile = false }) {
   const { 
     roads, 
     updateRoadStatus, 
@@ -65,16 +66,20 @@ export default function GovControlPanel({ className = "" }) {
   };
 
   return (
-    <aside className={`bg-white/92 backdrop-blur-2xl border border-slate-200/90 rounded-3xl p-4 sm:p-5 shadow-glass-hover flex flex-col gap-3.5 font-sans max-h-[calc(100vh-100px)] ${className}`}>
+    <aside className={`${
+      isMobile 
+        ? 'w-full flex flex-col gap-3 font-sans' 
+        : `bg-white/92 backdrop-blur-2xl border border-slate-200/90 rounded-3xl p-4 sm:p-5 shadow-glass-hover flex flex-col gap-3.5 font-sans max-h-[calc(100vh-100px)] ${className}`
+    }`}>
       
       {/* 1. Header with Gov Badge & Live Broadcast Pill */}
-      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center shadow-md border border-slate-200/80 flex-shrink-0">
+      <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white p-1 flex items-center justify-center shadow-md border border-slate-200/80 flex-shrink-0">
             <img src="/logo.svg" alt="MargSetu Logo" className="w-full h-full object-contain" />
           </div>
           <div>
-            <h2 className="font-extrabold text-sm text-slate-900 leading-tight flex items-center gap-1.5">
+            <h2 className="font-extrabold text-xs sm:text-sm text-slate-900 leading-tight flex items-center gap-1.5">
               <span>Control Room Dispatch</span>
               <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-900 text-emerald-400">Gov</span>
             </h2>
@@ -86,7 +91,7 @@ export default function GovControlPanel({ className = "" }) {
 
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/60 text-[10px] font-bold text-emerald-700">
           <Radio className="w-3 h-3 animate-pulse text-emerald-600" />
-          <span>BRO Sentinel Active</span>
+          <span>BRO Sentinel</span>
         </div>
       </div>
 
@@ -96,7 +101,7 @@ export default function GovControlPanel({ className = "" }) {
         {/* Tab: Live Field Reports */}
         <button
           onClick={() => setActiveTab('reports')}
-          className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-xs font-bold transition-all relative ${
+          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition-all relative ${
             activeTab === 'reports'
               ? 'bg-white text-slate-900 shadow-sm'
               : 'text-slate-600 hover:text-slate-900'
@@ -114,7 +119,7 @@ export default function GovControlPanel({ className = "" }) {
         {/* Tab: Highway Controls */}
         <button
           onClick={() => setActiveTab('highways')}
-          className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-xs font-bold transition-all ${
+          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition-all ${
             activeTab === 'highways'
               ? 'bg-white text-slate-900 shadow-sm'
               : 'text-slate-600 hover:text-slate-900'
@@ -132,7 +137,7 @@ export default function GovControlPanel({ className = "" }) {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="p-3 rounded-xl bg-slate-900 text-white text-xs flex items-center justify-between gap-3 shadow-lg"
+            className="p-2.5 rounded-xl bg-slate-900 text-white text-xs flex items-center justify-between gap-2 shadow-lg"
           >
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
@@ -147,105 +152,93 @@ export default function GovControlPanel({ className = "" }) {
       </AnimatePresence>
 
       {/* 3. Tab Contents */}
-      <div className="overflow-y-auto flex-1 pr-1">
+      <div className="overflow-y-auto flex-1 pr-1 max-h-[50vh] sm:max-h-none">
         {activeTab === 'reports' ? (
-          /* Live Field Reports Verification Feed (Phase 3) */
+          /* Live Incoming Field Reports Feed (Phase 3) */
           <GovFieldReportsFeed />
         ) : (
-          /* Highway Controls List (Phase 1) */
+          /* Highway Network Control & Live Broadcast Switches (Phase 1) */
           <div className="space-y-3">
             {roads.map(road => {
               const isSelected = selectedRoadId === road.id;
+              const isEditingNotes = editingNotesId === road.id;
 
               return (
                 <div
                   key={road.id}
                   className={`p-3.5 rounded-2xl border transition-all ${
-                    isSelected 
-                      ? 'bg-slate-50/90 border-slate-400 shadow-sm ring-2 ring-slate-900/5' 
+                    isSelected
+                      ? 'bg-slate-50 border-slate-400 shadow-sm'
                       : 'bg-white/80 border-slate-200/80 hover:border-slate-300'
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-extrabold text-xs text-slate-900 px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
-                          {road.highway_code}
-                        </span>
-                        <span className="text-[11px] font-semibold text-slate-500">
-                          {road.state}
-                        </span>
-                      </div>
-                      <h3 className="font-bold text-xs text-slate-800 mt-1">
-                        {road.road_name}
-                      </h3>
-                      <div className="text-[10px] text-slate-500 mt-0.5 flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-slate-400" />
-                        <span>{road.length_km} km &bull; {road.origin} ➔ {road.destination}</span>
-                      </div>
+                  <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <span className="font-extrabold text-xs text-slate-900 px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
+                        {road.highway_code}
+                      </span>
+                      <span className="text-[11px] font-semibold text-slate-500">
+                        {road.state}
+                      </span>
                     </div>
 
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      {road.length_km} km
+                    </span>
+                  </div>
+
+                  <h3 className="font-bold text-xs text-slate-900 mb-2">
+                    {road.road_name}
+                  </h3>
+
+                  {/* 3-State Radio Buttons */}
+                  <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl mb-3">
+                    {/* Clear Button */}
                     <button
-                      onClick={() => setSelectedRoadId(road.id)}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-                      title="Focus on Map"
+                      onClick={() => handleStatusChange(road.id, 'clear')}
+                      className={`flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-[11px] font-bold transition-all ${
+                        road.status === 'clear'
+                          ? 'bg-emerald-600 text-white shadow-xs'
+                          : 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50'
+                      }`}
                     >
-                      <ChevronRight className="w-4 h-4" />
+                      <CheckCircle className="w-3 h-3" />
+                      <span>Clear</span>
+                    </button>
+
+                    {/* Warning Button */}
+                    <button
+                      onClick={() => handleStatusChange(road.id, 'warning')}
+                      className={`flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-[11px] font-bold transition-all ${
+                        road.status === 'warning'
+                          ? 'bg-amber-500 text-white shadow-xs'
+                          : 'text-slate-600 hover:text-amber-700 hover:bg-amber-50'
+                      }`}
+                    >
+                      <AlertTriangle className="w-3 h-3" />
+                      <span>Warning</span>
+                    </button>
+
+                    {/* Blocked Button */}
+                    <button
+                      onClick={() => handleStatusChange(road.id, 'blocked')}
+                      className={`flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-[11px] font-bold transition-all ${
+                        road.status === 'blocked'
+                          ? 'bg-rose-600 text-white shadow-xs'
+                          : 'text-slate-600 hover:text-rose-700 hover:bg-rose-50'
+                      }`}
+                    >
+                      <XCircle className="w-3 h-3" />
+                      <span>Blocked</span>
                     </button>
                   </div>
 
-                  {/* Status Toggle Control */}
-                  <div className="mb-2">
-                    <label className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                      Set Real-Time Status:
-                    </label>
-                    <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100/90 rounded-xl border border-slate-200/60">
-                      
-                      <button
-                        onClick={() => handleStatusChange(road.id, 'clear')}
-                        className={`flex items-center justify-center gap-1 py-1 px-1.5 rounded-lg text-[11px] font-bold transition-all ${
-                          road.status === 'clear'
-                            ? 'bg-emerald-500 text-white shadow-xs'
-                            : 'text-slate-600 hover:text-emerald-700'
-                        }`}
-                      >
-                        <CheckCircle className="w-3 h-3" />
-                        <span>Clear</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleStatusChange(road.id, 'warning')}
-                        className={`flex items-center justify-center gap-1 py-1 px-1.5 rounded-lg text-[11px] font-bold transition-all ${
-                          road.status === 'warning'
-                            ? 'bg-amber-500 text-white shadow-xs'
-                            : 'text-slate-600 hover:text-amber-700'
-                        }`}
-                      >
-                        <AlertTriangle className="w-3 h-3" />
-                        <span>Warning</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleStatusChange(road.id, 'blocked')}
-                        className={`flex items-center justify-center gap-1 py-1 px-1.5 rounded-lg text-[11px] font-bold transition-all ${
-                          road.status === 'blocked'
-                            ? 'bg-rose-500 text-white shadow-xs'
-                            : 'text-slate-600 hover:text-rose-700'
-                        }`}
-                      >
-                        <XCircle className="w-3 h-3" />
-                        <span>Blocked</span>
-                      </button>
-
-                    </div>
-                  </div>
-
-                  {/* Hazard Notes Section */}
-                  <div className="text-xs bg-slate-50 p-2 rounded-xl border border-slate-200/80">
-                    {editingNotesId === road.id ? (
-                      <div className="space-y-1.5">
+                  {/* Advisory Notes Section */}
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/60">
+                    {isEditingNotes ? (
+                      <div className="space-y-2">
                         <textarea
-                          value={notesInput[road.id] ?? road.hazard_notes}
+                          value={notesInput[road.id] !== undefined ? notesInput[road.id] : road.hazard_notes}
                           onChange={(e) => setNotesInput({ ...notesInput, [road.id]: e.target.value })}
                           className="w-full text-[11px] p-2 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-1 focus:ring-slate-900"
                           rows={2}

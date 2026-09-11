@@ -72,29 +72,29 @@ export default function LandingPage() {
           {/* Card 1: Citizen & Driver Portal */}
           <Link
             to="/citizen"
-            className="group relative bg-white/90 backdrop-blur-md rounded-3xl p-8 sm:p-10 border border-slate-200/90 shadow-glass hover:shadow-glass-hover hover:border-emerald-500/50 transition-all duration-300 flex flex-col justify-between overflow-hidden"
+            className="group relative bg-white/90 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-glass hover:shadow-glass-hover hover:border-emerald-500/50 transition-all duration-300 flex flex-col justify-between overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none group-hover:bg-emerald-100/60 transition-colors" />
             
             <div>
-              <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-emerald-600 mb-6 group-hover:scale-105 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300 shadow-sm">
-                <Car className="w-7 h-7" />
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-emerald-600 mb-5 sm:mb-6 group-hover:scale-105 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300 shadow-sm">
+                <Car className="w-6 h-6 sm:w-7 sm:h-7" />
               </div>
 
-              <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-600 font-mono">
+              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-emerald-600 font-mono">
                 {t('publicAccess', 'Public Access Portal')}
               </span>
 
-              <h2 className="text-2xl font-black text-slate-900 mt-1 mb-2.5 tracking-tight group-hover:text-emerald-700 transition-colors">
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 mb-2.5 tracking-tight group-hover:text-emerald-700 transition-colors">
                 {t('citizenPortal', 'Enter as Citizen / Driver')}
               </h2>
 
-              <p className="text-sm text-slate-600 leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                 Check live highway accessibility across Meghalaya, Assam, Arunachal, and Nagaland. View real-time color-coded routes and official road advisories before travel.
               </p>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
+            <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-100 flex items-center justify-between text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
               <span>{t('liveMapBtn', 'Launch Live Map')}</span>
               <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all">
                 <ArrowRight className="w-4 h-4" />
@@ -105,13 +105,13 @@ export default function LandingPage() {
           {/* Card 2: Government Control Portal */}
           <Link
             to="/govt"
-            className="group relative bg-white/90 backdrop-blur-md rounded-3xl p-8 sm:p-10 border border-slate-200/90 shadow-glass hover:shadow-glass-hover hover:border-slate-800 transition-all duration-300 flex flex-col justify-between overflow-hidden"
+            className="group relative bg-white/90 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-glass hover:shadow-glass-hover hover:border-slate-800 transition-all duration-300 flex flex-col justify-between overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-slate-100 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none group-hover:bg-slate-200/60 transition-colors" />
             
             <div>
-              <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-105 transition-all duration-300 shadow-sm">
-                <Shield className="w-7 h-7" />
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-emerald-400 mb-5 sm:mb-6 group-hover:scale-105 transition-all duration-300 shadow-sm">
+                <Shield className="w-6 h-6 sm:w-7 sm:h-7" />
               </div>
 
               <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 font-mono">

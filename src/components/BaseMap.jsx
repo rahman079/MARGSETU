@@ -237,36 +237,39 @@ export default function BaseMap({ className = "w-full h-full" }) {
     <div className={`relative ${className}`}>
       
       {/* Sleek Floating Basemap Tile Switcher (Top-Right of Map) */}
-      <div className="absolute top-4 right-4 z-20 flex items-center gap-1 p-1 bg-white/90 backdrop-blur-xl border border-slate-200/90 rounded-2xl shadow-md font-sans text-xs">
+      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex items-center gap-0.5 sm:gap-1 p-0.5 sm:p-1 bg-white/90 backdrop-blur-xl border border-slate-200/90 rounded-2xl shadow-md font-sans text-[10px] sm:text-xs">
         <button
           onClick={() => setActiveTileType('carto')}
-          className={`px-2.5 py-1 rounded-xl font-bold transition-all ${
+          className={`px-2 sm:px-2.5 py-1 rounded-xl font-bold transition-all ${
             activeTileType === 'carto'
               ? 'bg-indigo-600 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
-          CARTO Positron
+          <span className="hidden sm:inline">CARTO Positron</span>
+          <span className="sm:hidden">CARTO</span>
         </button>
         <button
           onClick={() => setActiveTileType('osm')}
-          className={`px-2.5 py-1 rounded-xl font-bold transition-all ${
+          className={`px-2 sm:px-2.5 py-1 rounded-xl font-bold transition-all ${
             activeTileType === 'osm'
               ? 'bg-indigo-600 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
-          OSM Standard
+          <span className="hidden sm:inline">OSM Standard</span>
+          <span className="sm:hidden">OSM</span>
         </button>
         <button
           onClick={() => setActiveTileType('satellite')}
-          className={`px-2.5 py-1 rounded-xl font-bold transition-all ${
+          className={`px-2 sm:px-2.5 py-1 rounded-xl font-bold transition-all ${
             activeTileType === 'satellite'
               ? 'bg-indigo-600 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
-          Satellite
+          <span className="hidden sm:inline">Satellite</span>
+          <span className="sm:hidden">Sat</span>
         </button>
       </div>
 
