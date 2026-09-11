@@ -1,0 +1,627 @@
+/* ==========================================================================
+   MargSetu - Citizen & Driver Dashboard Styles (Page 2)
+   Route Planner, Dual Route Indicators (Green vs Red), & Reporting FAB
+   ========================================================================== */
+
+.citizen-dashboard-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+  min-height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Citizen Top Bar: Search & Location Selectors */
+.citizen-search-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.search-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.search-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.network-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid var(--border-glow-green);
+  color: #34d399;
+}
+
+.route-inputs-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.route-input-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.route-select-wrapper {
+  position: relative;
+}
+
+.route-select {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-strong);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 12px 36px 12px 14px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.route-select:focus {
+  outline: none;
+  border-color: var(--safe-green);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.select-arrow-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--text-muted);
+}
+
+.swap-route-btn {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all var(--transition-normal);
+}
+
+.swap-route-btn:hover {
+  background: #1e3a8a;
+  border-color: #3b82f6;
+  color: #ffffff;
+  transform: rotate(180deg);
+}
+
+.sos-emergency-trigger {
+  margin-top: 20px;
+}
+
+/* Quick Popular Routes Chips */
+.quick-routes-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-subtle);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.quick-bar-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.quick-route-chip {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.quick-route-chip:hover, .quick-route-chip.active {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: var(--safe-green);
+  color: #34d399;
+}
+
+/* Main Dashboard Workspace (Map + Route Panels) */
+.citizen-workspace-grid {
+  display: grid;
+  grid-template-columns: 1fr 440px;
+  gap: 20px;
+  flex: 1;
+}
+
+/* Map Container */
+.citizen-map-card {
+  position: relative;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-md);
+  min-height: 540px;
+}
+
+.citizen-map-header {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.map-legend-pill {
+  pointer-events: auto;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.legend-color-line {
+  width: 16px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.legend-green { background: var(--safe-green); box-shadow: 0 0 6px var(--safe-green); }
+.legend-red { background: var(--danger-red); box-shadow: 0 0 6px var(--danger-red); }
+
+.map-layer-controls {
+  pointer-events: auto;
+  display: flex;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  gap: 2px;
+}
+
+.map-layer-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.map-layer-btn.active, .map-layer-btn:hover {
+  background: #1e3a8a;
+  color: #ffffff;
+}
+
+.citizen-leaflet-map {
+  width: 100%;
+  height: 100%;
+  min-height: 540px;
+  z-index: 1;
+}
+
+/* Route Comparison Sidebar Panel */
+.citizen-routes-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  max-height: calc(100vh - 280px);
+}
+
+/* Route Detail Cards */
+.route-detail-card {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  transition: all var(--transition-normal);
+}
+
+.route-detail-card.safe-route-theme {
+  border-color: var(--border-glow-green);
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.06) 0%, var(--bg-surface) 100%);
+}
+
+.route-detail-card.danger-route-theme {
+  border-color: var(--border-glow-red);
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.06) 0%, var(--bg-surface) 100%);
+}
+
+.route-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.badge-green-glow {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid var(--border-glow-green);
+}
+
+.badge-red-glow {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid var(--border-glow-red);
+}
+
+.route-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.route-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.route-sub {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.eta-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  min-width: 90px;
+}
+
+.eta-green {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid var(--border-glow-green);
+}
+
+.eta-red {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid var(--border-glow-red);
+}
+
+.eta-time {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.eta-dist {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.safety-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border-radius: var(--radius-md);
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.metric-val {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: 2px;
+}
+
+.route-desc-box {
+  font-size: 0.84rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+/* Hazard Spotlight Card on Blocked Route */
+.hazard-spotlight-card {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.hazard-thumb-wrapper {
+  position: relative;
+  height: 140px;
+  overflow: hidden;
+}
+
+.hazard-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hazard-photo-overlay {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+
+.hazard-details {
+  padding: 12px;
+}
+
+.hazard-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fca5a5;
+  margin-bottom: 4px;
+}
+
+.hazard-loc {
+  font-size: 0.8rem;
+  color: #e2e8f0;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.hazard-desc {
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.warning-bullet-box {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.warning-box-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fca5a5;
+  margin-bottom: 8px;
+}
+
+.warning-bullet-box ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.warning-bullet-box li {
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  position: relative;
+  padding-left: 14px;
+}
+
+.warning-bullet-box li::before {
+  content: '⚠️';
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 0.68rem;
+}
+
+/* Turn-by-Turn Accordion */
+.turn-steps-accordion {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.steps-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #34d399;
+  margin-bottom: 10px;
+}
+
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.8rem;
+}
+
+.step-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.step-text p {
+  color: #f1f5f9;
+  line-height: 1.35;
+  font-size: 0.8rem;
+}
+
+.step-dist {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Floating Action Button (FAB) - "Report Sudden Disaster" */
+.citizen-report-fab {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 1000;
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-full);
+  padding: 14px 26px;
+  font-size: 1rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(239, 68, 68, 0.5), 0 0 0 0 rgba(239, 68, 68, 0.7);
+  animation: fab-alert-pulse 2.2s infinite;
+  transition: all var(--transition-smooth);
+}
+
+.citizen-report-fab:hover {
+  transform: translateY(-4px) scale(1.04);
+  box-shadow: 0 16px 35px rgba(239, 68, 68, 0.7);
+  background: #dc2626;
+}
+
+.fab-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes fab-alert-pulse {
+  0% { box-shadow: 0 10px 25px rgba(239, 68, 68, 0.5), 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { box-shadow: 0 10px 25px rgba(239, 68, 68, 0.5), 0 0 0 16px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 10px 25px rgba(239, 68, 68, 0.5), 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* Responsive Citizen View */
+@media (max-width: 1080px) {
+  .citizen-workspace-grid {
+    grid-template-columns: 1fr;
+  }
+  .citizen-routes-panel {
+    max-height: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .route-inputs-grid {
+    grid-template-columns: 1fr;
+  }
+  .swap-route-btn {
+    margin: 0 auto;
+  }
+  .citizen-report-fab {
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
+}

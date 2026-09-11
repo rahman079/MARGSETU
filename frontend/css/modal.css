@@ -1,0 +1,452 @@
+/* ==========================================================================
+   MargSetu - Dialog & Modal Component Styles
+   Built according to modern-web-guidance (Native <dialog>, @starting-style, backdrop-filter)
+   ========================================================================== */
+
+/* Base Modal Dialog Setup */
+dialog {
+  border: none;
+  background: transparent;
+  padding: 0;
+  max-width: 90vw;
+  margin: auto;
+  outline: none;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), display 0.25s allow-discrete, overlay 0.25s allow-discrete;
+  opacity: 0;
+  transform: translateY(20px) scale(0.97);
+}
+
+dialog[open] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+}
+
+dialog::backdrop {
+  background-color: rgba(6, 10, 16, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background-color 0.25s ease, display 0.25s allow-discrete, overlay 0.25s allow-discrete;
+
+  @starting-style {
+    background-color: rgba(6, 10, 16, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog {
+    transform: none !important;
+    transition-duration: 0.1s !important;
+  }
+  @starting-style {
+    dialog[open] {
+      transform: none !important;
+    }
+  }
+}
+
+/* Modal Inner Container */
+.dialog-modal-card {
+  background: var(--bg-surface-elevated);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), var(--shadow-glow-green);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-theme-danger {
+  border-color: var(--border-glow-red);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), var(--shadow-glow-red);
+}
+
+.modal-theme-blue {
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 25px rgba(59, 130, 246, 0.3);
+}
+
+/* Modal Header */
+.dialog-header {
+  padding: 20px 24px;
+  background: rgba(15, 23, 42, 0.85);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dialog-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dialog-icon-box {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-box-red { background: var(--danger-red-bg); color: var(--danger-red-light); border: 1px solid var(--border-glow-red); }
+.icon-box-blue { background: var(--info-blue-bg); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+.icon-box-green { background: var(--safe-green-bg); color: var(--safe-green-light); border: 1px solid var(--border-glow-green); }
+
+.dialog-header h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.dialog-header p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.dialog-close-btn {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.3rem;
+  transition: all var(--transition-fast);
+}
+
+.dialog-close-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+/* Modal Body */
+.dialog-body {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Disaster Photo Presets Grid */
+.preset-section-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+.disaster-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.disaster-preset-card {
+  position: relative;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-align: left;
+}
+
+.disaster-preset-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+
+.disaster-preset-card.selected {
+  border-color: var(--danger-red);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+}
+
+.preset-img-wrap {
+  height: 80px;
+  overflow: hidden;
+  position: relative;
+}
+
+.preset-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preset-card-title {
+  padding: 8px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.3;
+}
+
+.preset-check-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: var(--danger-red);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  display: none;
+}
+
+.disaster-preset-card.selected .preset-check-badge {
+  display: block;
+}
+
+/* Upload Preview & Custom Photo Box */
+.photo-upload-container {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 16px;
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  align-items: center;
+}
+
+.preview-box {
+  width: 100%;
+  height: 110px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #000000;
+  border: 1px solid var(--border-subtle);
+}
+
+.preview-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upload-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-input-hidden {
+  display: none;
+}
+
+/* GPS Telemetry Bar */
+.gps-telemetry-box {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid var(--border-glow-green);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.gps-lock-active {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gps-text strong {
+  font-size: 0.88rem;
+  color: #a7f3d0;
+  display: block;
+}
+
+.gps-text p {
+  font-size: 0.78rem;
+  color: #6ee7b7;
+  margin-top: 2px;
+}
+
+/* Form Input Groups */
+.form-row-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: border-color var(--transition-fast);
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: var(--safe-green);
+}
+
+.severity-radio-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.severity-label {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.severity-label input {
+  display: none;
+}
+
+.severity-label.sev-moderate:has(input:checked) {
+  border-color: var(--info-blue);
+  background: var(--info-blue-bg);
+  color: #60a5fa;
+}
+
+.severity-label.sev-high:has(input:checked) {
+  border-color: var(--warning-amber);
+  background: var(--warning-amber-bg);
+  color: #fbbf24;
+}
+
+.severity-label.sev-critical:has(input:checked) {
+  border-color: var(--danger-red);
+  background: var(--danger-red-bg);
+  color: #f87171;
+}
+
+/* Modal Footer */
+.dialog-footer {
+  padding: 16px 24px;
+  background: rgba(15, 23, 42, 0.9);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Image Lightbox Inspection Modal */
+#image-inspect-dialog {
+  max-width: 800px;
+}
+
+.lightbox-img-wrap {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  max-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000000;
+}
+
+.lightbox-img {
+  width: 100%;
+  height: auto;
+  max-height: 65vh;
+  object-fit: contain;
+}
+
+.lightbox-caption {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 12px 16px;
+  text-align: center;
+}
+
+/* Emergency Helpline Grid in SOS Modal */
+.sos-helpline-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.sos-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sos-card h4 { font-size: 0.92rem; color: #ffffff; }
+.sos-card p { font-size: 0.75rem; color: var(--text-muted); }
+.sos-dial-btn {
+  background: var(--safe-green-bg);
+  border: 1px solid var(--border-glow-green);
+  color: #34d399;
+  font-weight: 800;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+}
+
+/* Responsive Modals */
+@media (max-width: 768px) {
+  .disaster-preset-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .photo-upload-container {
+    grid-template-columns: 1fr;
+  }
+  .form-row-grid {
+    grid-template-columns: 1fr;
+  }
+  .sos-helpline-list {
+    grid-template-columns: 1fr;
+  }
+}

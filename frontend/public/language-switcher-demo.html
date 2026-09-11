@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>North East Regional Language Switcher Demo | MargSetu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --emerald: #059669;
+      --emerald-light: #ecfdf5;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-600: #475569;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      --radius-lg: 1rem;
+      --radius-xl: 1.25rem;
+      --radius-full: 9999px;
+      --shadow-dropdown: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #f8fafc;
+      color: var(--slate-900);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--slate-200);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #4f46e5, #059669);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 900;
+      font-size: 16px;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-tag {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      padding: 2px 6px;
+      background: #eef2ff;
+      color: var(--primary);
+      border-radius: 6px;
+    }
+
+    /* Trigger Button Style */
+    .ne-lang-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 0.85rem;
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--slate-800);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .ne-lang-btn:hover {
+      background: var(--slate-50);
+      border-color: var(--slate-300);
+    }
+
+    .ne-lang-btn.active {
+      border-color: var(--primary);
+      background: #eef2ff;
+      color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    .ne-badge {
+      font-size: 0.65rem;
+      font-weight: 900;
+      background: var(--slate-100);
+      color: var(--slate-800);
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.35rem;
+    }
+
+    /* Dropdown Popover Container */
+    .ne-lang-container {
+      position: relative;
+    }
+
+    .ne-dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      width: 380px;
+      max-height: 560px;
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-dropdown);
+      z-index: 1000;
+      flex-direction: column;
+      overflow: hidden;
+      animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .ne-dropdown-menu.open {
+      display: flex;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Popover Header */
+    .ne-menu-header {
+      padding: 1rem 1rem 0.75rem 1rem;
+      background: linear-gradient(to bottom, #f8fafc, #ffffff);
+      border-bottom: 1px solid var(--slate-100);
+    }
+
+    .ne-menu-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .ne-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .ne-search-box {
+      position: relative;
+      margin-top: 0.5rem;
+    }
+
+    .ne-search-box input {
+      width: 100%;
+      padding: 0.5rem 0.75rem 0.5rem 2rem;
+      background: var(--slate-100);
+      border: 1px solid var(--slate-200);
+      border-radius: 0.65rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--slate-800);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .ne-search-box input:focus {
+      background: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    .ne-search-icon {
+      position: absolute;
+      left: 0.65rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.8rem;
+      color: var(--slate-600);
+      pointer-events: none;
+    }
+
+    /* State Filter Chips */
+    .ne-chips-bar {
+      display: flex;
+      gap: 0.35rem;
+      overflow-x: auto;
+      padding-top: 0.6rem;
+      padding-bottom: 0.2rem;
+    }
+
+    .ne-chips-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ne-chip {
+      padding: 0.25rem 0.55rem;
+      border-radius: 0.5rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+      background: var(--slate-100);
+      color: var(--slate-600);
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .ne-chip:hover {
+      background: var(--slate-200);
+      color: var(--slate-900);
+    }
+
+    .ne-chip.active {
+      background: var(--slate-900);
+      color: #fff;
+    }
+
+    /* Language List */
+    .ne-lang-list {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 340px;
+      padding: 0.75rem;
+    }
+
+    .ne-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.4rem 0.25rem 0.4rem;
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--slate-600);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .ne-lang-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.65rem;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      margin-bottom: 2px;
+      border: 1px solid transparent;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .ne-lang-item:hover {
+      background: var(--slate-100);
+    }
+
+    .ne-lang-item.selected {
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+    }
+
+    .ne-lang-left {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .ne-lang-code-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--slate-100);
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 900;
+      color: var(--slate-800);
+    }
+
+    .ne-lang-item.selected .ne-lang-code-icon {
+      background: var(--emerald);
+      color: #fff;
+    }
+
+    .ne-lang-names {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ne-lang-main {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .ne-lang-native {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--emerald);
+      background: var(--emerald-light);
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+
+    .ne-lang-sub {
+      font-size: 0.65rem;
+      color: var(--slate-600);
+      margin-top: 2px;
+    }
+
+    .ne-active-check {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--emerald);
+      background: #fff;
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid #a7f3d0;
+    }
+
+    /* Menu Footer */
+    .ne-menu-footer {
+      padding: 0.65rem 1rem;
+      background: var(--slate-50);
+      border-top: 1px solid var(--slate-100);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: var(--slate-600);
+    }
+
+    /* Floating Side Widget */
+    .ne-floating-dock {
+      position: fixed;
+      right: 1.5rem;
+      bottom: 2rem;
+      z-index: 999;
+    }
+
+    .ne-floating-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 1rem;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-full);
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.25s ease;
+    }
+
+    .ne-floating-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.2);
+      border-color: var(--primary);
+    }
+
+    /* Hero Section Demo */
+    .hero-container {
+      max-width: 900px;
+      margin: 3rem auto;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 9999px;
+      background: #fff;
+      border: 1px solid var(--slate-200);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--slate-800);
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-title span {
+      color: #059669;
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--slate-600);
+      line-height: 1.6;
+      max-width: 680px;
+      margin: 0 auto 2rem auto;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 2rem;
+      text-align: left;
+    }
+
+    .portal-card {
+      background: #fff;
+      border: 1px solid var(--slate-200);
+      border-radius: 1.25rem;
+      padding: 1.75rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      transition: all 0.2s ease;
+    }
+
+    .portal-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+      border-color: #cbd5e1;
+    }
+
+    .toast-popup {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: #0f172a;
+      color: #fff;
+      padding: 0.75rem 1.25rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 2000;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @media (max-width: 640px) {
+      .ne-dropdown-menu {
+        width: calc(100vw - 2rem);
+        right: -1rem;
+      }
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar with Language Switcher -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">M</div>
+      <div>
+        <div style="display: flex; align-items: center; gap: 0.4rem;">
+          <span class="brand-title">MargSetu</span>
+          <span class="brand-tag">NE Region</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Language Switcher Trigger & Popover Menu (Top-Right Placement) -->
+    <div class="ne-lang-container" id="ne-header-lang-wrapper">
+      <button class="ne-lang-btn" id="ne-lang-btn" aria-label="Toggle language menu" aria-expanded="false">
+        <span>🌐</span>
+        <span class="ne-badge" id="btn-lang-code">EN</span>
+        <span id="btn-lang-name">English</span>
+        <span style="font-size: 0.65rem; color: #94a3b8;">▼</span>
+      </button>
+
+      <!-- Language Selection Dropdown Menu -->
+      <div class="ne-dropdown-menu" id="ne-dropdown-menu">
+        
+        <div class="ne-menu-header">
+          <div class="ne-menu-title-row">
+            <span class="ne-title">
+              <span>🗣️</span> North East Regional Languages
+            </span>
+            <span style="font-size: 0.65rem; font-weight: 800; background: #ecfdf5; color: #059669; padding: 2px 6px; border-radius: 99px;">
+              8 States
+            </span>
+          </div>
+
+          <div class="ne-search-box">
+            <span class="ne-search-icon">🔍</span>
+            <input type="text" id="ne-search-input" placeholder="Search language, dialect, or state..." autocomplete="off">
+          </div>
+
+          <!-- State Filter Chips -->
+          <div class="ne-chips-bar" id="ne-state-chips">
+            <button class="ne-chip active" data-state="ALL">All States</button>
+            <button class="ne-chip" data-state="AS">Assam</button>
+            <button class="ne-chip" data-state="MN">Manipur</button>
+            <button class="ne-chip" data-state="ML">Meghalaya</button>
+            <button class="ne-chip" data-state="MZ">Mizoram</button>
+            <button class="ne-chip" data-state="TR">Tripura</button>
+            <button class="ne-chip" data-state="NL">Nagaland</button>
+            <button class="ne-chip" data-state="AR">Arunachal</button>
+            <button class="ne-chip" data-state="SK">Sikkim</button>
+          </div>
+        </div>
+
+        <!-- Scrollable List of North East Languages -->
+        <div class="ne-lang-list" id="ne-lang-list">
+          <!-- Populated by JavaScript -->
+        </div>
+
+        <div class="ne-menu-footer">
+          <span>🟢 20+ Regional Dialects Available</span>
+          <span>MDoNER &bull; MargSetu</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Showcase -->
+  <main class="hero-container">
+    <div class="hero-pill">
+      <span style="width: 8px; height: 8px; border-radius: 50%; background: #059669;"></span>
+      <span>North Eastern Region &bull; Phase 1 Real-Time Geospatial Sentinel</span>
+    </div>
+
+    <h1 class="hero-title" id="hero-title">
+      Real-Time Accessibility &amp; Disaster-Routing for the <span>North Eastern Region</span>
+    </h1>
+
+    <p class="hero-sub" id="hero-sub">
+      Empowering citizens and disaster authorities across 8 North Eastern states with instant highway status intelligence, live PostGIS mapping, and rapid incident rerouting.
+    </p>
+
+    <div class="cards-grid">
+      <div class="portal-card">
+        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🚗</div>
+        <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.35rem;" id="card-citizen-title">Citizen &amp; Driver Portal</h3>
+        <p style="font-size: 0.85rem; color: #64748b; line-height: 1.5;">Check live highway accessibility across Meghalaya, Assam, Arunachal, and Nagaland before travel.</p>
+      </div>
+
+      <div class="portal-card">
+        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🛡️</div>
+        <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.35rem;" id="card-govt-title">Government Control Portal</h3>
+        <p style="font-size: 0.85rem; color: #64748b; line-height: 1.5;">Monitor 3 critical highway corridors, deploy alerts, and update road blockage telemetry.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Notification Toast -->
+  <div class="toast-popup" id="toast-popup"></div>
+
+  <!-- JavaScript Implementation -->
+  <script>
+    // North East Comprehensive Language Dataset
+    const NE_LANGUAGES = [
+      // English (Default pinned at top)
+      { code: 'en', iso: 'EN', name: 'English', native: 'English', state: 'National / Global', stateCode: 'ALL', greeting: 'Welcome', isDefault: true },
+      
+      // Assam
+      { code: 'as', iso: 'AS', name: 'Assamese', native: 'অসমীয়া', state: 'Assam', stateCode: 'AS', greeting: 'নমস্কাৰ (Nomoskar)' },
+      { code: 'brx', iso: 'BRX', name: 'Bodo', native: 'बड़ो', state: 'Assam', stateCode: 'AS', greeting: 'खुलुमबाय (Khulumbai)' },
+      { code: 'bn-as', iso: 'BN', name: 'Bengali', native: 'বাংলা', state: 'Assam', stateCode: 'AS', greeting: 'নমস্কার (Nomoshkar)' },
+      { code: 'kbx', iso: 'KBX', name: 'Karbi', native: 'Karbi (Arleng)', state: 'Assam', stateCode: 'AS', greeting: 'Kardom' },
+
+      // Manipur
+      { code: 'mni', iso: 'MNI', name: 'Manipuri (Meitei)', native: 'ꯃꯤꯇꯩꯂꯣꯟ', state: 'Manipur', stateCode: 'MN', greeting: 'ꯈꯨꯔꯨꯃꯖꯔꯤ (Khurumjari)' },
+
+      // Meghalaya
+      { code: 'kha', iso: 'KHA', name: 'Khasi', native: 'Ka Ktien Khasi', state: 'Meghalaya', stateCode: 'ML', greeting: 'Khublei Shibun' },
+      { code: 'grt', iso: 'GRT', name: 'Garo', native: 'A·chik', state: 'Meghalaya', stateCode: 'ML', greeting: 'Namgipa Sal' },
+      { code: 'pnr', iso: 'PNR', name: 'Jaintia (Pnar)', native: 'Pnar', state: 'Meghalaya', stateCode: 'ML', greeting: 'Khublei' },
+
+      // Mizoram
+      { code: 'lus', iso: 'MIZ', name: 'Mizo', native: 'Mizo ṭawng', state: 'Mizoram', stateCode: 'MZ', greeting: 'Chibai' },
+
+      // Tripura
+      { code: 'trp', iso: 'TRP', name: 'Kokborok', native: 'Kokborok (Tripuri)', state: 'Tripura', stateCode: 'TR', greeting: 'Khulumkha' },
+      { code: 'bn-tr', iso: 'BN', name: 'Bengali (Tripura)', native: 'বাংলা', state: 'Tripura', stateCode: 'TR', greeting: 'নমস্কার (Nomoshkar)' },
+
+      // Nagaland
+      { code: 'njo', iso: 'AO', name: 'Ao', native: 'Ao Chungli', state: 'Nagaland', stateCode: 'NL', greeting: 'Salangba' },
+      { code: 'njm', iso: 'ANG', name: 'Angami', native: 'Tenyidie', state: 'Nagaland', stateCode: 'NL', greeting: 'Kevise' },
+      { code: 'nsm', iso: 'SMI', name: 'Sema (Sumi)', native: 'Sümi tsütsa', state: 'Nagaland', stateCode: 'NL', greeting: 'Aloke' },
+
+      // Arunachal Pradesh
+      { code: 'njz', iso: 'NYI', name: 'Nyishi', native: 'Nyishi Agom', state: 'Arunachal Pradesh', stateCode: 'AR', greeting: 'Donyi Polo' },
+      { code: 'adi', iso: 'ADI', name: 'Adi', native: 'Adi Agom', state: 'Arunachal Pradesh', stateCode: 'AR', greeting: 'Kapei' },
+      { code: 'mon', iso: 'MON', name: 'Monpa', native: 'Monpa / Tshangla', state: 'Arunachal Pradesh', stateCode: 'AR', greeting: 'Tashi Delek' },
+      { code: 'apt', iso: 'APT', name: 'Apatani', native: 'Tani / Apatani', state: 'Arunachal Pradesh', stateCode: 'AR', greeting: 'Ngunyi' },
+
+      // Sikkim
+      { code: 'ne', iso: 'NEP', name: 'Nepali', native: 'नेपाली', state: 'Sikkim', stateCode: 'SK', greeting: 'नमस्ते (Namaste)' },
+      { code: 'sip', iso: 'BHU', name: 'Sikkimese (Bhutia)', native: 'འབྲས་ལྗོངས་སྐད།', state: 'Sikkim', stateCode: 'SK', greeting: 'བཀྲ་ཤིས་བདེ་ལེགས། (Tashi Delek)' },
+      { code: 'lep', iso: 'LEP', name: 'Lepcha', native: 'ᰛᰩᰵᰛᰧᰵ (Róngring)', state: 'Sikkim', stateCode: 'SK', greeting: 'Khumbum' }
+    ];
+
+    // Simple localized text samples for live toggle showcase
+    const DEMO_TRANSLATIONS = {
+      en: {
+        title: 'Real-Time Accessibility & Disaster-Routing for the <span>North Eastern Region</span>',
+        sub: 'Empowering citizens and disaster authorities across 8 North Eastern states with instant highway status intelligence.',
+        citizen: 'Citizen & Driver Portal',
+        govt: 'Government Control Portal'
+      },
+      as: {
+        title: 'উত্তৰ-পূৰ্বাঞ্চলৰ বাবে ক্ষিপ্ৰ পথ যোগাযোগ আৰু <span>দুৰ্যোগ-পথ নিৰ্দেশনা</span>',
+        sub: '৮ খন উত্তৰ-পূব ৰাজ্যৰ নাগৰিক আৰু দুৰ্যোগ ব্যৱস্থাপনা কৰ্তৃপক্ষক লাইভ মেপিং আৰু পথৰ তথ্য প্ৰদান।',
+        citizen: 'নাগৰিক / চালকৰ প্ৰৱেশদ্বাৰ',
+        govt: 'চৰকাৰী নিয়ন্ত্ৰণ কক্ষ'
+      },
+      mni: {
+        title: 'ꯑꯋꯥꯡ ꯅꯣꯡꯄꯣꯛ ꯂꯃꯗꯃꯒꯤ ꯑꯣꯏꯕ <span>ꯂꯝꯕꯤ-ꯆꯠꯊꯣꯛ ꯑꯃꯁꯨꯡ ꯂꯝꯖꯤꯡ</span>',
+        sub: 'ꯑꯋꯥꯡ ꯅꯣꯡꯄꯣꯛꯀꯤ ꯁ꯭ꯇꯦꯠ ꯸ ꯒꯤ ꯃꯤꯌꯥꯝꯗ ꯂꯝꯕꯤꯒꯤ ꯄꯥꯎ ꯈꯨꯗꯛꯇ ꯄꯤꯕꯥ।',
+        citizen: 'ꯃꯤꯌꯥꯝ / ꯗ꯭ꯔꯥꯏꯚꯔ ꯄꯣꯔꯇꯦꯜ',
+        govt: 'ꯁꯔꯀꯥꯔꯒꯤ ꯀꯟꯇ꯭ꯔꯣꯜ ꯔꨨꨨ'
+      },
+      kha: {
+        title: 'Ka jingtip halor ki surok bad jingiaid lynti na ka bynta ka <span>North East</span>',
+        sub: 'Ai jingiarap ia ki nongshong shnong bad ki bor synshar jong ki 8 tylli ki jylla da ki khubor ba shisha.',
+        citizen: 'Ka Portal ki Paidbah / Nongniah Kali',
+        govt: 'Ka Office ki Ophisar Sorkar'
+      },
+      lus: {
+        title: 'Kawngpui Dinhmun leh Chhiatrupna Kawng Kawhhmuhna <span>North East Tan</span>',
+        sub: 'North East State 8-a mipui leh sorkar tan kawngpui dinhmun dik tak hriattirna pek.',
+        citizen: 'Mipui / Khalhtu Lanna',
+        govt: 'Sorkar Thawktu Room'
+      }
+    };
+
+    // State Variables
+    let currentLang = 'en';
+    let currentStateFilter = 'ALL';
+    let searchQuery = '';
+
+    // DOM Elements
+    const btnTrigger = document.getElementById('ne-lang-btn');
+    const dropdownMenu = document.getElementById('ne-dropdown-menu');
+    const searchInput = document.getElementById('ne-search-input');
+    const langListContainer = document.getElementById('ne-lang-list');
+    const stateChipsContainer = document.getElementById('ne-state-chips');
+    const toast = document.getElementById('toast-popup');
+
+    // Toggle Dropdown
+    btnTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = dropdownMenu.classList.toggle('open');
+      btnTrigger.classList.toggle('active', isOpen);
+      btnTrigger.setAttribute('aria-expanded', isOpen);
+      if (isOpen) {
+        searchInput.focus();
+      }
+    });
+
+    // Close Dropdown on Click Outside
+    document.addEventListener('click', (e) => {
+      if (!dropdownMenu.contains(e.target) && !btnTrigger.contains(e.target)) {
+        closeDropdown();
+      }
+    });
+
+    // Close on Escape Key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeDropdown();
+    });
+
+    function closeDropdown() {
+      dropdownMenu.classList.remove('open');
+      btnTrigger.classList.remove('active');
+      btnTrigger.setAttribute('aria-expanded', 'false');
+    }
+
+    // Filter Chips Click
+    stateChipsContainer.addEventListener('click', (e) => {
+      if (e.target.classList.contains('ne-chip')) {
+        document.querySelectorAll('.ne-chip').forEach(c => c.classList.remove('active'));
+        e.target.classList.add('active');
+        currentStateFilter = e.target.getAttribute('data-state');
+        renderList();
+      }
+    });
+
+    // Search Input
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value.toLowerCase().trim();
+      renderList();
+    });
+
+    // Select Language
+    function selectLanguage(langCode) {
+      const selected = NE_LANGUAGES.find(l => l.code === langCode);
+      if (!selected) return;
+
+      currentLang = langCode;
+      
+      // Update Trigger Button
+      document.getElementById('btn-lang-code').innerText = selected.iso;
+      document.getElementById('btn-lang-name').innerText = selected.name;
+
+      // Update Sample UI Text
+      const dict = DEMO_TRANSLATIONS[langCode] || DEMO_TRANSLATIONS.en;
+      document.getElementById('hero-title').innerHTML = dict.title;
+      document.getElementById('hero-sub').innerText = dict.sub;
+      document.getElementById('card-citizen-title').innerText = dict.citizen;
+      document.getElementById('card-govt-title').innerText = dict.govt;
+
+      // Show Toast
+      showToast(`Language switched to ${selected.name} (${selected.native}) • ${selected.greeting}`);
+
+      closeDropdown();
+      renderList();
+    }
+
+    function showToast(msg) {
+      toast.innerText = msg;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    // Render Language List
+    function renderList() {
+      langListContainer.innerHTML = '';
+
+      const filtered = NE_LANGUAGES.filter(lang => {
+        const matchesSearch = 
+          lang.name.toLowerCase().includes(searchQuery) ||
+          lang.native.toLowerCase().includes(searchQuery) ||
+          lang.state.toLowerCase().includes(searchQuery) ||
+          lang.iso.toLowerCase().includes(searchQuery);
+
+        const matchesState = (currentStateFilter === 'ALL' || lang.stateCode === currentStateFilter || lang.isDefault);
+        return matchesSearch && matchesState;
+      });
+
+      if (filtered.length === 0) {
+        langListContainer.innerHTML = `
+          <div style="padding: 2rem; text-align: center; color: #94a3b8; font-size: 0.8rem;">
+            🔍 No languages found for "${searchQuery}"
+          </div>
+        `;
+        return;
+      }
+
+      // Group by State
+      const groups = {};
+      filtered.forEach(lang => {
+        if (!groups[lang.state]) groups[lang.state] = [];
+        groups[lang.state].push(lang);
+      });
+
+      // Render English at top if present
+      if (groups['National / Global']) {
+        const header = document.createElement('div');
+        header.className = 'ne-section-header';
+        header.innerHTML = `<span>Global / Primary</span><span>Universal</span>`;
+        langListContainer.appendChild(header);
+
+        groups['National / Global'].forEach(lang => {
+          langListContainer.appendChild(createLangItem(lang));
+        });
+        delete groups['National / Global'];
+      }
+
+      // Render North East States
+      Object.keys(groups).forEach(stateName => {
+        const header = document.createElement('div');
+        header.className = 'ne-section-header';
+        header.innerHTML = `<span>📍 ${stateName}</span><span>${groups[stateName].length} dialects</span>`;
+        langListContainer.appendChild(header);
+
+        groups[stateName].forEach(lang => {
+          langListContainer.appendChild(createLangItem(lang));
+        });
+      });
+    }
+
+    function createLangItem(lang) {
+      const isSelected = currentLang === lang.code;
+      const item = document.createElement('div');
+      item.className = `ne-lang-item ${isSelected ? 'selected' : ''}`;
+      item.onclick = () => selectLanguage(lang.code);
+
+      item.innerHTML = `
+        <div class="ne-lang-left">
+          <div class="ne-lang-code-icon">${lang.iso}</div>
+          <div class="ne-lang-names">
+            <div class="ne-lang-main">
+              <span>${lang.name}</span>
+              ${lang.native ? `<span class="ne-lang-native">${lang.native}</span>` : ''}
+            </div>
+            <div class="ne-lang-sub">
+              ${lang.state} ${lang.greeting ? `&bull; "${lang.greeting}"` : ''}
+            </div>
+          </div>
+        </div>
+        ${isSelected ? `<div class="ne-active-check">✓ Active</div>` : `<span style="font-size: 0.65rem; color: #94a3b8; font-weight:700;">${lang.stateCode}</span>`}
+      `;
+      return item;
+    }
+
+    // Initial Render
+    renderList();
+  </script>
+</body>
+</html>
