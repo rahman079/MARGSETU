@@ -1,11 +1,12 @@
 /**
- * MargSetu (मार्गसेतु) - Citizen Hazard Reporting Modal (Phase 3 + Phase 4 Offline & SMS Failsafes)
+ * MargSetu (मार्गसेतु) - Citizen Hazard Reporting Modal (Phase 3 + Phase 4 Offline & SMS Failsafes + Auth)
  * Frosted-glass modal featuring auto geo-tagging (GPS lock), camera Base64 capture,
  * intelligent online/offline switching, IndexedDB Store & Forward caching, and SMS URI scheme dispatch.
  */
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRoads } from '../context/RoadContext';
+import { useAuth } from '../context/AuthContext';
 import { INCIDENT_TYPES, PRESET_INCIDENT_PHOTOS } from '../data/sampleReports';
 import { ROUTE_CORRIDORS } from '../data/routeCorridors';
 import { toast } from 'sonner';
@@ -35,6 +36,7 @@ export default function ReportHazardModal({ isOpen, onClose }) {
     isOnline, 
     isSimulatedOffline 
   } = useRoads();
+  const { user } = useAuth();
 
   // Form State
   const [incidentType, setIncidentType] = useState(INCIDENT_TYPES[0]);
@@ -177,7 +179,10 @@ export default function ReportHazardModal({ isOpen, onClose }) {
       nearestHighway: detectedHighway?.name || 'NH-6 Guwahati-Shillong Corridor',
       linkedRoadId: detectedHighway?.linkedRoadId || 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       photoUrl: photoBase64,
-      reporterRole: 'Citizen Scout (Verified App User)'
+      reporterRole: user 
+        ? `${user.name} (${user.role === 'govt' ? 'Official #' + (user.badgeId || 'Gov') : (user.category || user.state || 'Verified Citizen')})`
+        : 'Citizen Scout (Verified App User)',
+      reporterContact: user?.phone || user?.email || undefined
     };
 
     if (isOnline) {

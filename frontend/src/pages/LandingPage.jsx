@@ -2,12 +2,17 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useRoads } from '../context/RoadContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { Shield, Car, ArrowRight, Radio, MapPin, CheckCircle, AlertTriangle, XCircle, Navigation, Sparkles } from 'lucide-react';
 
 export default function LandingPage() {
   const { roads, stats } = useRoads();
   const { t, currentLang } = useLanguage();
+  const { user } = useAuth();
+
+  const citizenPortalLink = user?.role === 'citizen' ? '/citizen' : '/login?role=citizen&redirect=/citizen';
+  const govtPortalLink = user?.role === 'govt' ? '/govt' : '/login?role=govt&redirect=/govt';
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-slate-50/50 flex flex-col justify-between font-sans selection:bg-emerald-100 selection:text-emerald-900">
@@ -71,7 +76,7 @@ export default function LandingPage() {
           
           {/* Card 1: Citizen & Driver Portal */}
           <Link
-            to="/citizen"
+            to={citizenPortalLink}
             className="group relative bg-white/90 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-glass hover:shadow-glass-hover hover:border-emerald-500/50 transition-all duration-300 flex flex-col justify-between overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none group-hover:bg-emerald-100/60 transition-colors" />
@@ -95,7 +100,7 @@ export default function LandingPage() {
             </div>
 
             <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-100 flex items-center justify-between text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
-              <span>{t('liveMapBtn', 'Launch Live Map')}</span>
+              <span>{user?.role === 'citizen' ? t('liveMapBtn', 'Launch Live Map') : 'Citizen Sign In / Open'}</span>
               <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all">
                 <ArrowRight className="w-4 h-4" />
               </div>
@@ -104,7 +109,7 @@ export default function LandingPage() {
 
           {/* Card 2: Government Control Portal */}
           <Link
-            to="/govt"
+            to={govtPortalLink}
             className="group relative bg-white/90 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-glass hover:shadow-glass-hover hover:border-slate-800 transition-all duration-300 flex flex-col justify-between overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-slate-100 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none group-hover:bg-slate-200/60 transition-colors" />
@@ -128,13 +133,50 @@ export default function LandingPage() {
             </div>
 
             <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between text-sm font-bold text-slate-900 group-hover:text-slate-700 transition-colors">
-              <span>{t('controlRoomBtn', 'Access Control Room')}</span>
+              <span>{user?.role === 'govt' ? t('controlRoomBtn', 'Access Control Room') : 'Official Sign In / Dispatch'}</span>
               <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
                 <ArrowRight className="w-4 h-4" />
               </div>
             </div>
           </Link>
 
+        </motion.div>
+
+        {/* Quick Sign In / Registration Gateway */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-6 max-w-4xl mx-auto p-4 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-left"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200/60 flex items-center justify-center text-indigo-600 flex-shrink-0">
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-slate-800">
+                Want personalized road alerts or official dispatch clearance?
+              </div>
+              <div className="text-[11px] text-slate-500">
+                Sign in as a verified citizen traveler or authenticated government officer.
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Link
+              to="/login?role=citizen"
+              className="flex-1 sm:flex-none text-center px-3.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold transition-all"
+            >
+              Citizen Sign In
+            </Link>
+            <Link
+              to="/login?role=govt"
+              className="flex-1 sm:flex-none text-center px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all"
+            >
+              Gov Official Sign In
+            </Link>
+          </div>
         </motion.div>
 
         {/* Live Monitored Corridors Strip */}

@@ -1,11 +1,14 @@
 /**
- * MargSetu (मार्गसेतु) - Government Control Panel & Sentinel Command (Phase 1 + Phase 3)
+ * MargSetu (मार्गसेतु) - Government Control Panel & Sentinel Command (Phase 1 + Phase 3 + Auth)
  * Frosted-glass command center with tabbed switching between Highway Corridors and Live Citizen Field Reports.
+ * Stamped with active Officer Credentials & Clearance badges.
  * Fully responsive for both desktop floating sidebar and mobile bottom-sheet integration.
  */
 
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useRoads } from '../context/RoadContext';
+import { useAuth } from '../context/AuthContext';
 import GovFieldReportsFeed from './GovFieldReportsFeed';
 import { 
   Shield, 
@@ -19,7 +22,10 @@ import {
   Edit3, 
   Check,
   Camera,
-  Layers
+  Layers,
+  User,
+  LogIn,
+  Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -34,6 +40,8 @@ export default function GovControlPanel({ className = "", isMobile = false }) {
     fieldReports 
   } = useRoads();
 
+  const { user, isGovAuthenticated, demoLogin } = useAuth();
+
   const [activeTab, setActiveTab] = useState('reports'); // 'reports' | 'highways'
   const [editingNotesId, setEditingNotesId] = useState(null);
   const [notesInput, setNotesInput] = useState({});
@@ -41,9 +49,13 @@ export default function GovControlPanel({ className = "", isMobile = false }) {
 
   const pendingReportsCount = fieldReports.filter(r => r.status === 'pending').length;
 
+  const currentOfficerStamp = isGovAuthenticated && user
+    ? `${user.name} (${user.badgeId || user.department || 'Gov Official'})`
+    : 'NER Emergency Control Room (Govt ID #NER-409)';
+
   const handleStatusChange = async (roadId, newStatus) => {
     const road = roads.find(r => r.id === roadId);
-    const updated = await updateRoadStatus(roadId, newStatus);
+    const updated = await updateRoadStatus(roadId, newStatus, null, currentOfficerStamp);
     
     // Trigger feedback notification
     setLastActionToast({
@@ -60,7 +72,7 @@ export default function GovControlPanel({ className = "", isMobile = false }) {
   const handleSaveNotes = async (roadId) => {
     const newNote = notesInput[roadId];
     if (newNote !== undefined) {
-      await updateRoadStatus(roadId, roads.find(r => r.id === roadId).status, newNote);
+      await updateRoadStatus(roadId, roads.find(r => r.id === roadId).status, newNote, currentOfficerStamp);
     }
     setEditingNotesId(null);
   };
@@ -95,6 +107,46 @@ export default function GovControlPanel({ className = "", isMobile = false }) {
         </div>
       </div>
 
+      {/* 1.1 Officer Badge / Active Clearance Strip */}
+      {isGovAuthenticated && user ? (
+        <div className="p-2 px-3 rounded-2xl bg-slate-900 text-white flex items-center justify-between gap-2 shadow-xs">
+          <div className="flex items-center gap-2 truncate">
+            <div className="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center flex-shrink-0">
+              <Shield className="w-3.5 h-3.5 text-emerald-400" />
+            </div>
+            <div className="truncate">
+              <div className="text-[11px] font-bold truncate text-emerald-400">{user.name}</div>
+              <div className="text-[9px] text-slate-400 truncate">{user.department} &bull; {user.badgeId}</div>
+            </div>
+          </div>
+          <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[9px] font-mono font-bold text-slate-300 flex-shrink-0">
+            Active
+          </span>
+        </div>
+      ) : (
+        <div className="p-2 px-2.5 rounded-2xl bg-slate-100 border border-slate-200/80 flex items-center justify-between gap-2 text-[11px]">
+          <span className="text-slate-600 font-medium truncate">
+            Session: Evaluator Dispatch Mode
+          </span>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <button
+              onClick={() => demoLogin('govt', 'govt_bro')}
+              className="px-2 py-0.5 rounded-lg bg-slate-900 text-white text-[10px] font-bold hover:bg-slate-800 flex items-center gap-1"
+              title="1-Click Demo BRO Official"
+            >
+              <Sparkles className="w-2.5 h-2.5 text-amber-400" />
+              <span>Demo Login</span>
+            </button>
+            <Link
+              to="/login?role=govt"
+              className="px-2 py-0.5 rounded-lg bg-white border border-slate-300 text-slate-700 text-[10px] font-bold hover:bg-slate-50"
+            >
+              Sign In
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* 2. Mode Selector Tabs */}
       <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100/80 rounded-2xl border border-slate-200/60">
         
@@ -128,36 +180,38 @@ export default function GovControlPanel({ className = "", isMobile = false }) {
           <Layers className="w-3.5 h-3.5 text-indigo-600" />
           <span>Highway Network</span>
         </button>
+
       </div>
 
-      {/* Live Feedback Toast Banner */}
+      {/* Action Toast Feedback */}
       <AnimatePresence>
         {lastActionToast && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="p-2.5 rounded-xl bg-slate-900 text-white text-xs flex items-center justify-between gap-2 shadow-lg"
+            className="p-2 rounded-xl bg-slate-900 text-white text-xs flex items-center justify-between"
           >
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              <span>
-                <strong>{lastActionToast.roadCode}</strong> set to{' '}
-                <span className="uppercase font-bold text-emerald-300">{lastActionToast.newStatus}</span>
-              </span>
+              <span className={`w-2 h-2 rounded-full ${
+                lastActionToast.newStatus === 'clear' ? 'bg-emerald-400' :
+                lastActionToast.newStatus === 'warning' ? 'bg-amber-400' : 'bg-rose-400'
+              }`} />
+              <span><strong>{lastActionToast.roadCode}</strong> updated to <strong>{lastActionToast.newStatus.toUpperCase()}</strong></span>
             </div>
             <span className="text-[10px] text-slate-400">{lastActionToast.time}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* 3. Tab Contents */}
-      <div className="overflow-y-auto flex-1 pr-1 max-h-[50vh] sm:max-h-none">
+      {/* 3. Tab Contents Container */}
+      <div className="flex-1 overflow-y-auto pr-1">
+        
         {activeTab === 'reports' ? (
-          /* Live Incoming Field Reports Feed (Phase 3) */
+          /* TAB 1: Live Citizen Field Reports Feed */
           <GovFieldReportsFeed />
         ) : (
-          /* Highway Network Control & Live Broadcast Switches (Phase 1) */
+          /* TAB 2: Highway Status Controls */
           <div className="space-y-3">
             {roads.map(road => {
               const isSelected = selectedRoadId === road.id;
@@ -167,32 +221,44 @@ export default function GovControlPanel({ className = "", isMobile = false }) {
                 <div
                   key={road.id}
                   className={`p-3.5 rounded-2xl border transition-all ${
-                    isSelected
-                      ? 'bg-slate-50 border-slate-400 shadow-sm'
+                    isSelected 
+                      ? 'bg-indigo-50/50 border-indigo-300 ring-2 ring-indigo-500/20' 
                       : 'bg-white/80 border-slate-200/80 hover:border-slate-300'
                   }`}
                 >
-                  <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
-                    <div className="flex items-center gap-2">
-                      <span className="font-extrabold text-xs text-slate-900 px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
-                        {road.highway_code}
-                      </span>
-                      <span className="text-[11px] font-semibold text-slate-500">
-                        {road.state}
-                      </span>
+                  
+                  {/* Road Info Header */}
+                  <div className="flex items-start justify-between gap-2 mb-2.5">
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-black text-xs text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md">
+                          {road.highway_code}
+                        </span>
+                        <span className="text-xs font-bold text-slate-800 truncate">
+                          {road.road_name}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 mt-0.5">
+                        {road.state} &bull; {road.length_km} km &bull; {road.origin} &rarr; {road.destination}
+                      </p>
                     </div>
 
-                    <span className="text-[10px] text-slate-400 font-mono">
-                      {road.length_km} km
-                    </span>
+                    <button
+                      onClick={() => setSelectedRoadId(isSelected ? null : road.id)}
+                      className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
+                        isSelected 
+                          ? 'bg-indigo-600 text-white' 
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                      title={isSelected ? 'Clear Focus' : 'Focus on Map'}
+                    >
+                      <MapPin className="w-3.5 h-3.5" />
+                    </button>
                   </div>
 
-                  <h3 className="font-bold text-xs text-slate-900 mb-2">
-                    {road.road_name}
-                  </h3>
-
-                  {/* 3-State Radio Buttons */}
-                  <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl mb-3">
+                  {/* Status Toggle Buttons */}
+                  <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100/90 rounded-xl mb-2.5">
+                    
                     {/* Clear Button */}
                     <button
                       onClick={() => handleStatusChange(road.id, 'clear')}

@@ -2,18 +2,23 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useRoads } from '../context/RoadContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { Shield, Car, ArrowRight, Radio, MapPin, CheckCircle, AlertTriangle, XCircle, Navigation, Sparkles } from 'lucide-react';
 
 export default function LandingPage() {
   const { roads, stats } = useRoads();
   const { t, currentLang } = useLanguage();
+  const { user } = useAuth();
+
+  const citizenPortalLink = user?.role === 'citizen' ? '/citizen' : '/login?role=citizen&redirect=/citizen';
+  const govtPortalLink = user?.role === 'govt' ? '/govt' : '/login?role=govt&redirect=/govt';
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-slate-50/50 flex flex-col justify-between font-sans selection:bg-emerald-100 selection:text-emerald-900">
       
       {/* Hero Section */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-16 pb-12 text-center">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 pb-12 text-center">
         
         {/* Top Tagline Pill with Logo & Active Language */}
         <motion.div
@@ -22,15 +27,15 @@ export default function LandingPage() {
           transition={{ duration: 0.5 }}
           className="flex flex-col items-center justify-center gap-3 mb-6"
         >
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white p-2 flex items-center justify-center shadow-md border border-slate-200/90 transition-transform hover:scale-105">
+          <div className="w-16 h-16 rounded-2xl bg-white p-2 flex items-center justify-center shadow-md border border-slate-200/90 transition-transform hover:scale-105">
             <img src="/logo.svg" alt="MargSetu Logo" className="w-full h-full object-contain" />
           </div>
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm text-xs font-semibold text-slate-700">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>North Eastern Region &bull; Phase 1 Real-Time Geospatial Sentinel</span>
-            {currentLang?.code !== 'en' && (
+            {currentLang.code !== 'en' && (
               <span className="ml-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-                {currentLang?.nativeName} ({currentLang?.isoCode})
+                {currentLang.nativeName} ({currentLang.isoCode})
               </span>
             )}
           </div>
@@ -38,7 +43,7 @@ export default function LandingPage() {
 
         {/* Main Title with Dynamic Translation */}
         <motion.h1
-          key={`title-${currentLang?.code || 'en'}`}
+          key={`title-${currentLang.code}`}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -52,11 +57,11 @@ export default function LandingPage() {
 
         {/* Subtitle */}
         <motion.p
-          key={`sub-${currentLang?.code || 'en'}`}
+          key={`sub-${currentLang.code}`}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mt-4 sm:mt-5 text-sm sm:text-base md:text-lg text-slate-600 max-w-2xl mx-auto font-normal leading-relaxed"
+          className="mt-5 text-base sm:text-lg text-slate-600 max-w-2xl mx-auto font-normal leading-relaxed"
         >
           {t('heroSubtitle', 'Empowering citizens and disaster authorities across 8 North Eastern states with instant highway status intelligence, live PostGIS mapping, and rapid incident rerouting.')}
         </motion.p>
@@ -66,12 +71,12 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-8 sm:mt-14 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 max-w-4xl mx-auto text-left"
+          className="mt-12 sm:mt-16 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto text-left"
         >
           
           {/* Card 1: Citizen & Driver Portal */}
           <Link
-            to="/citizen"
+            to={citizenPortalLink}
             className="group relative bg-white/90 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-glass hover:shadow-glass-hover hover:border-emerald-500/50 transition-all duration-300 flex flex-col justify-between overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none group-hover:bg-emerald-100/60 transition-colors" />
@@ -95,7 +100,7 @@ export default function LandingPage() {
             </div>
 
             <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-100 flex items-center justify-between text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
-              <span>{t('liveMapBtn', 'Launch Live Map')}</span>
+              <span>{user?.role === 'citizen' ? t('liveMapBtn', 'Launch Live Map') : 'Citizen Sign In / Open'}</span>
               <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all">
                 <ArrowRight className="w-4 h-4" />
               </div>
@@ -104,7 +109,7 @@ export default function LandingPage() {
 
           {/* Card 2: Government Control Portal */}
           <Link
-            to="/govt"
+            to={govtPortalLink}
             className="group relative bg-white/90 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-glass hover:shadow-glass-hover hover:border-slate-800 transition-all duration-300 flex flex-col justify-between overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-slate-100 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none group-hover:bg-slate-200/60 transition-colors" />
@@ -114,21 +119,21 @@ export default function LandingPage() {
                 <Shield className="w-6 h-6 sm:w-7 sm:h-7" />
               </div>
 
-              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500 font-mono">
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 font-mono">
                 {t('commandDispatch', 'Command & Dispatch')}
               </span>
 
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 mb-2.5 tracking-tight group-hover:text-slate-700 transition-colors">
+              <h2 className="text-2xl font-black text-slate-900 mt-1 mb-2.5 tracking-tight group-hover:text-slate-700 transition-colors">
                 {t('govtPortal', 'Enter as Government Official')}
               </h2>
 
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              <p className="text-sm text-slate-600 leading-relaxed">
                 Monitor 3 critical North Eastern highway corridors. Update real-time road conditions from Clear to Blocked, deploy advisories, and instantly synchronize with citizen maps.
               </p>
             </div>
 
-            <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-100 flex items-center justify-between text-xs sm:text-sm font-bold text-slate-900 group-hover:text-slate-700 transition-colors">
-              <span>{t('controlRoomBtn', 'Access Control Room')}</span>
+            <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between text-sm font-bold text-slate-900 group-hover:text-slate-700 transition-colors">
+              <span>{user?.role === 'govt' ? t('controlRoomBtn', 'Access Control Room') : 'Official Sign In / Dispatch'}</span>
               <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all">
                 <ArrowRight className="w-4 h-4" />
               </div>
@@ -137,14 +142,51 @@ export default function LandingPage() {
 
         </motion.div>
 
+        {/* Quick Sign In / Registration Gateway */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-6 max-w-4xl mx-auto p-4 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-left"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200/60 flex items-center justify-center text-indigo-600 flex-shrink-0">
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-slate-800">
+                Want personalized road alerts or official dispatch clearance?
+              </div>
+              <div className="text-[11px] text-slate-500">
+                Sign in as a verified citizen traveler or authenticated government officer.
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Link
+              to="/login?role=citizen"
+              className="flex-1 sm:flex-none text-center px-3.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold transition-all"
+            >
+              Citizen Sign In
+            </Link>
+            <Link
+              to="/login?role=govt"
+              className="flex-1 sm:flex-none text-center px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all"
+            >
+              Gov Official Sign In
+            </Link>
+          </div>
+        </motion.div>
+
         {/* Live Monitored Corridors Strip */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-10 sm:mt-14 max-w-4xl mx-auto p-4 sm:p-6 bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-sm text-left"
+          className="mt-14 max-w-4xl mx-auto p-6 bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-sm text-left"
         >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3 sm:pb-4 mb-3 sm:mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
             <div>
               <h3 className="font-extrabold text-sm text-slate-900">
                 Phase 1 Highway Sentinel Network
@@ -154,7 +196,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-bold">
+            <div className="flex items-center gap-3 text-xs font-bold">
               <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                 <CheckCircle className="w-3.5 h-3.5" />
                 {stats.clear} Clear
@@ -170,7 +212,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {roads.map(road => (
               <div key={road.id} className="p-3 rounded-xl bg-slate-50 border border-slate-200/60">
                 <div className="flex items-center justify-between gap-1 mb-1">
@@ -193,9 +235,9 @@ export default function LandingPage() {
       </div>
 
       {/* Clean GovTech Footer */}
-      <footer className="border-t border-slate-200/80 bg-white/70 py-4 sm:py-6">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 text-center sm:text-left">
-          <div className="flex items-center gap-2 justify-center sm:justify-start flex-wrap">
+      <footer className="border-t border-slate-200/80 bg-white/70 py-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+          <div className="flex items-center gap-2">
             <span className="font-bold text-slate-700">MargSetu (मार्गसेतु)</span>
             <span>&bull; Ministry of Development of North Eastern Region (MDoNER)</span>
           </div>
