@@ -88,7 +88,15 @@ export default function GovControlPanel({ className = "", isMobile = false }) {
       <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white p-1 flex items-center justify-center shadow-md border border-slate-200/80 flex-shrink-0">
-            <img src="/logo.svg" alt="MargSetu Logo" className="w-full h-full object-contain" />
+            <img 
+              src="/logo.svg" 
+              alt="MargSetu Logo" 
+              className="w-full h-full object-contain" 
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = '/favicon.svg';
+              }}
+            />
           </div>
           <div>
             <h2 className="font-extrabold text-xs sm:text-sm text-slate-900 leading-tight flex items-center gap-1.5">

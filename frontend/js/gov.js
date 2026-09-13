@@ -338,7 +338,7 @@ export class GovControlRoomController {
             coords: [26.3500, 92.6800],
             altitude: '80 m',
             reportedBy: 'Assam State Transport Driver #AS-02-B-9901',
-            image: 'assets/images/flood_nh27.jpg',
+            image: '/assets/images/flood_nh27.jpg',
             description: 'Kopili river water crossed embankment. 2 feet high current over road.'
           },
           {
@@ -353,7 +353,7 @@ export class GovControlRoomController {
             coords: [24.2250, 92.6800],
             altitude: '820 m',
             reportedBy: 'K. Lalrinawma (Local Resident)',
-            image: 'assets/images/landslide_nh6.jpg',
+            image: '/assets/images/landslide_nh6.jpg',
             description: 'Slopes collapsed after 6 hours of heavy rainfall. Essential supply trucks queued up.'
           }
         ];

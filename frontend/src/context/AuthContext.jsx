@@ -17,9 +17,9 @@ export const DEMO_PROFILES = {
   // Citizen Profiles
   citizen_assam: {
     id: 'cit-001',
-    name: 'Priyan Sharma',
+    name: 'Shayan',
     role: 'citizen',
-    email: 'priyan.sharma@gmail.com',
+    email: 'shayan07@gmail.com',
     phone: '+91 98640 12345',
     state: 'Assam',
     city: 'Guwahati / Silchar',
@@ -31,9 +31,9 @@ export const DEMO_PROFILES = {
   },
   citizen_mizoram: {
     id: 'cit-002',
-    name: 'Mary Renthlei',
+    name: 'Arham',
     role: 'citizen',
-    email: 'mary.renthlei@gmail.com',
+    email: 'arham@gmail.com',
     phone: '+91 94361 88990',
     state: 'Mizoram',
     city: 'Aizawl',
@@ -45,9 +45,9 @@ export const DEMO_PROFILES = {
   },
   citizen_arunachal: {
     id: 'cit-003',
-    name: 'Tsering Dorjee',
+    name: 'Shayan',
     role: 'citizen',
-    email: 'tsering.dorjee@gmail.com',
+    email: 'shydshayanhassan@gmail.com',
     phone: '+91 94022 55667',
     state: 'Arunachal Pradesh',
     city: 'Tawang / Dirang',

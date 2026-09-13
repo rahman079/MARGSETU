@@ -7,7 +7,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRoads } from '../context/RoadContext';
 import { useAuth } from '../context/AuthContext';
-import { INCIDENT_TYPES, PRESET_INCIDENT_PHOTOS } from '../data/sampleReports';
+import { INCIDENT_TYPES, PRESET_INCIDENT_PHOTOS, createIncidentSVG } from '../data/sampleReports';
 import { ROUTE_CORRIDORS } from '../data/routeCorridors';
 import { toast } from 'sonner';
 import { 
@@ -132,7 +132,7 @@ export default function ReportHazardModal({ isOpen, onClose }) {
   };
 
   const handleSelectPresetPhoto = (preset) => {
-    setPhotoBase64(preset.dataUrl);
+    setPhotoBase64(preset.imageUrl || preset.dataUrl || preset.fallbackSvg);
     setIncidentType(preset.incidentType);
   };
 
@@ -168,6 +168,8 @@ export default function ReportHazardModal({ isOpen, onClose }) {
     const lat = coordinates.lat || 26.0250;
     const lng = coordinates.lng || 91.8210;
     const corridorCode = detectedHighway?.highwayCode || 'NH-6';
+    const matchedPreset = PRESET_INCIDENT_PHOTOS.find(p => p.incidentType === incidentType);
+    const fallbackSvg = matchedPreset?.fallbackSvg || createIncidentSVG(incidentType.toUpperCase(), '#ef4444', 'M 185 100 L 200 75 L 215 100 L 205 100 L 205 130 L 195 130 L 195 100 Z');
 
     const reportPayload = {
       incidentType,
@@ -179,6 +181,7 @@ export default function ReportHazardModal({ isOpen, onClose }) {
       nearestHighway: detectedHighway?.name || 'NH-6 Guwahati-Shillong Corridor',
       linkedRoadId: detectedHighway?.linkedRoadId || 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       photoUrl: photoBase64,
+      fallbackSvg: fallbackSvg,
       reporterRole: user 
         ? `${user.name} (${user.role === 'govt' ? 'Official #' + (user.badgeId || 'Gov') : (user.category || user.state || 'Verified Citizen')})`
         : 'Citizen Scout (Verified App User)',
@@ -400,7 +403,16 @@ export default function ReportHazardModal({ isOpen, onClose }) {
 
               {photoBase64 ? (
                 <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-900">
-                  <img src={photoBase64} alt="Captured Evidence" className="w-full h-44 object-cover" />
+                  <img 
+                    src={photoBase64} 
+                    alt="Captured Evidence" 
+                    className="w-full h-44 object-cover" 
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      const matched = PRESET_INCIDENT_PHOTOS.find(p => p.incidentType === incidentType);
+                      e.target.src = matched?.fallbackSvg || createIncidentSVG(incidentType.toUpperCase(), '#ef4444', 'M 185 100 L 200 75 L 215 100 L 205 100 L 205 130 L 195 130 L 195 100 Z');
+                    }}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-3 justify-between">
                     <span className="text-[10px] font-mono text-white/90 bg-black/40 px-2 py-0.5 rounded backdrop-blur-sm">
                       {coordinates.lat}° N, {coordinates.lng}° E

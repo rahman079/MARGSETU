@@ -327,7 +327,7 @@ export default function AuthPage() {
                   >
                     <div>
                       <div className="font-bold text-xs text-emerald-800">
-                        Priyan Sharma (Assam)
+                        Shayan (Assam)
                       </div>
                       <div className="text-[10px] text-slate-500">Guwahati &bull; Commuter</div>
                     </div>
@@ -341,7 +341,7 @@ export default function AuthPage() {
                   >
                     <div>
                       <div className="font-bold text-xs text-emerald-800">
-                        Mary Renthlei (Mizoram)
+                        Arham (Mizoram)
                       </div>
                       <div className="text-[10px] text-slate-500">Aizawl &bull; Freight Logistics</div>
                     </div>
@@ -405,7 +405,7 @@ export default function AuthPage() {
                       placeholder={
                         isGov 
                           ? 'e.g. BRO-VARTAK-409 or sk.nair@bro.gov.in'
-                          : (authMethod === 'otp' ? '+91 98640 12345' : 'priyan.sharma@gmail.com')
+                          : (authMethod === 'otp' ? '+91 98640 12345' : 'shayan07@gmail.com')
                       }
                       className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-slate-900"
                     />
@@ -538,7 +538,7 @@ export default function AuthPage() {
                       required
                       value={signupData.name}
                       onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
-                      placeholder={isGov ? 'e.g. Commandant S. K. Nair' : 'e.g. Priyan Sharma'}
+                      placeholder={isGov ? 'e.g. Commandant S. K. Nair' : 'e.g. Shayan'}
                       className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>

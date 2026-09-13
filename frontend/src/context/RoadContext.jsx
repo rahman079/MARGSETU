@@ -177,7 +177,24 @@ export const RoadProvider = ({ children }) => {
         } else if (event.data.type === 'REPORT_REJECTED') {
           console.log('[REAL-TIME SYNC] Report Rejected:', event.data.payload);
           setFieldReports(prev => 
-            prev.map(rpt => rpt.id === event.data.payload.reportId ? { ...rpt, status: 'rejected', rejectReason: event.data.payload.reason } : rpt)
+            prev.map(rpt => rpt.id === event.data.payload.reportId ? { 
+              ...rpt, 
+              status: 'rejected', 
+              rejectReason: event.data.payload.reason,
+              rejectedAt: event.data.payload.rejectedAt || new Date().toISOString()
+            } : rpt)
+          );
+          setSelectedReportId(prev => (prev === event.data.payload.reportId ? null : prev));
+          setLastUpdated(new Date());
+        } else if (event.data.type === 'REPORT_REOPENED') {
+          console.log('[REAL-TIME SYNC] Report Reopened:', event.data.payload);
+          setFieldReports(prev => 
+            prev.map(rpt => rpt.id === event.data.payload.reportId ? { 
+              ...rpt, 
+              status: 'pending', 
+              rejectReason: null,
+              reopenedAt: event.data.payload.reopenedAt || new Date().toISOString()
+            } : rpt)
           );
           setLastUpdated(new Date());
         } else if (event.data.type === 'DATABASE_RESET') {
@@ -349,23 +366,57 @@ export const RoadProvider = ({ children }) => {
     });
   }, [updateRoadStatus]);
 
-  // Phase 3: Reject Field Report
+  // Phase 3: Reject Field Report (Removes report from map)
   const rejectFieldReport = useCallback((reportId, reason = 'False alarm / Duplicate submission') => {
+    const timestamp = new Date().toISOString();
     setFieldReports(prev => 
-      prev.map(rpt => rpt.id === reportId ? { ...rpt, status: 'rejected', rejectReason: reason } : rpt)
+      prev.map(rpt => rpt.id === reportId ? { 
+        ...rpt, 
+        status: 'rejected', 
+        rejectReason: reason,
+        rejectedAt: timestamp
+      } : rpt)
     );
+    setSelectedReportId(prev => (prev === reportId ? null : prev));
 
     try {
       const channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
       channel.postMessage({
         type: 'REPORT_REJECTED',
-        payload: { reportId, reason }
+        payload: { reportId, reason, rejectedAt: timestamp }
       });
       channel.close();
     } catch (e) {}
 
-    toast.info('Field Report Rejected', {
-      description: `Report marked as dismissed. No roadblock triggered.`,
+    toast.info('🚫 Field Report Rejected', {
+      description: `Report marked as dismissed and removed from map view.`,
+      duration: 4000
+    });
+  }, []);
+
+  // Phase 3: Re-evaluate / Reopen Field Report (Restores to pending)
+  const reopenFieldReport = useCallback((reportId) => {
+    const timestamp = new Date().toISOString();
+    setFieldReports(prev => 
+      prev.map(rpt => rpt.id === reportId ? { 
+        ...rpt, 
+        status: 'pending', 
+        rejectReason: null,
+        reopenedAt: timestamp
+      } : rpt)
+    );
+
+    try {
+      const channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
+      channel.postMessage({
+        type: 'REPORT_REOPENED',
+        payload: { reportId, reopenedAt: timestamp }
+      });
+      channel.close();
+    } catch (e) {}
+
+    toast.success('Field Report Reopened', {
+      description: `Report restored to pending queue and visible on map for verification.`,
       duration: 4000
     });
   }, []);
@@ -415,6 +466,7 @@ export const RoadProvider = ({ children }) => {
     blocked: roads.filter(r => r.status === 'blocked').length,
     pendingReports: fieldReports.filter(r => r.status === 'pending').length,
     verifiedReports: fieldReports.filter(r => r.status === 'verified').length,
+    rejectedReports: fieldReports.filter(r => r.status === 'rejected').length,
     offlineQueuedCount: offlineQueue.length
   };
 
@@ -443,6 +495,7 @@ export const RoadProvider = ({ children }) => {
         submitFieldReport,
         verifyAndBlockReport,
         rejectFieldReport,
+        reopenFieldReport,
         // Phase 4 Offline Failsafes
         isOnline,
         isBrowserOnline,

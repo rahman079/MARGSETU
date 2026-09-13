@@ -93,6 +93,10 @@ export default function UserProfileModal({ isOpen, onClose }) {
                       src={user.avatar} 
                       alt={user.name} 
                       className="w-14 h-14 rounded-2xl object-cover border-2 border-white/80 shadow-md"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="%234f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+                      }}
                     />
                   ) : (
                     <div className="w-14 h-14 rounded-2xl bg-white/20 border-2 border-white/80 flex items-center justify-center text-white shadow-md">
@@ -267,12 +271,12 @@ export default function UserProfileModal({ isOpen, onClose }) {
                   type="button"
                   onClick={() => handleSwitchDemoAccount('citizen_assam')}
                   className={`p-2 rounded-xl text-left border transition-all text-[11px] ${
-                    user.email === 'priyan.sharma@gmail.com'
+                    user.email === 'shayan07@gmail.com'
                       ? 'bg-emerald-600 text-white border-emerald-600 font-bold shadow-xs'
                       : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
                   }`}
                 >
-                  <div className="font-bold truncate">Priyan S.</div>
+                  <div className="font-bold truncate">Shayan</div>
                   <div className="text-[9px] opacity-75 truncate">Assam Citizen</div>
                 </button>
               </div>

@@ -52,7 +52,15 @@ export default function Header() {
         {/* Brand Logo & Name */}
         <Link to="/" className="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white p-1 flex items-center justify-center shadow-md border border-slate-200/80 transition-transform group-hover:scale-105">
-            <img src="/logo.svg" alt="MargSetu Logo" className="w-full h-full object-contain" />
+            <img 
+              src="/logo.svg" 
+              alt="MargSetu Logo" 
+              className="w-full h-full object-contain" 
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = '/favicon.svg';
+              }}
+            />
           </div>
           <div>
             <div className="flex items-center gap-1 sm:gap-1.5">
@@ -203,7 +211,15 @@ export default function Header() {
               title="View Profile & Credentials"
             >
               {user.avatar ? (
-                <img src={user.avatar} alt={user.name} className="w-5 h-5 rounded-full object-cover border border-white/40" />
+                <img 
+                  src={user.avatar} 
+                  alt={user.name} 
+                  className="w-5 h-5 rounded-full object-cover border border-white/40" 
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%2310b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+                  }}
+                />
               ) : (
                 <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
                   {isGovAuthenticated ? <Shield className="w-3 h-3 text-emerald-400" /> : <User className="w-3 h-3 text-emerald-700" />}

@@ -13,6 +13,7 @@ import { MapContainer, TileLayer, Polyline, Marker, Popup, Tooltip, useMap } fro
 import L from 'leaflet';
 import { useRoads } from '../context/RoadContext';
 import { NER_CORRIDORS, ROUTE_CORRIDORS } from '../data/routeCorridors';
+import { PRESET_INCIDENT_PHOTOS, createIncidentSVG } from '../data/sampleReports';
 import { MAP_CONFIG } from '../services/navigationApi';
 import { 
   Shield, 
@@ -24,6 +25,7 @@ import {
   Sparkles, 
   Camera, 
   CheckCircle2,
+  XCircle,
   Layers,
   Mountain
 } from 'lucide-react';
@@ -165,7 +167,7 @@ function MapViewController({ selectedRoadId, activeCorridorId, selectedReportId,
 
   useEffect(() => {
     if (selectedReportId) {
-      const report = fieldReports.find(r => r.id === selectedReportId);
+      const report = fieldReports.find(r => r.id === selectedReportId && r.status !== 'rejected');
       if (report && report.latitude && report.longitude) {
         map.flyTo([report.latitude, report.longitude], 11, {
           duration: 1.2
@@ -214,7 +216,8 @@ export default function BaseMap({ className = "w-full h-full" }) {
     fieldReports,
     selectedReportId,
     setSelectedReportId,
-    verifyAndBlockReport
+    verifyAndBlockReport,
+    rejectFieldReport
   } = useRoads();
 
   // Active Basemap Tile Type: 'osm' (Default: OSM Standard) | 'carto' | 'satellite'
@@ -504,71 +507,84 @@ export default function BaseMap({ className = "w-full h-full" }) {
         )}
 
         {/* ========================================================================= */}
-        {/* 3. GEO-TAGGED CITIZEN FIELD REPORTS (Phase 3)                              */}
+        {/* 3. GEO-TAGGED CITIZEN FIELD REPORTS (Phase 3 - Excludes Rejected Reports)  */}
         {/* ========================================================================= */}
-        {fieldReports.map(report => {
-          if (!report.latitude || !report.longitude) return null;
+        {fieldReports
+          .filter(report => report.status !== 'rejected')
+          .map(report => {
+            if (!report.latitude || !report.longitude) return null;
 
-          return (
-            <Marker
-              key={report.id}
-              position={[report.latitude, report.longitude]}
-              icon={createCustomIcon('field-report', report.status)}
-            >
-              <Popup className="custom-map-popup">
-                <div className="p-1 min-w-[240px] max-w-[280px]">
-                  <div className="flex items-center justify-between gap-1 border-b border-slate-100 pb-1.5 mb-2">
-                    <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-800 flex items-center gap-1">
-                      <Camera className="w-3 h-3 text-rose-500" />
-                      <span>{report.incidentType}</span>
-                    </span>
-                    <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${
-                      report.status === 'verified'
-                        ? 'bg-rose-100 text-rose-700'
-                        : (report.status === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600')
-                    }`}>
-                      {report.status.toUpperCase()}
-                    </span>
-                  </div>
-
-                  {(report.photoUrl || report.fallbackSvg) && (
-                    <div className="mb-2 rounded-lg overflow-hidden border border-slate-200 bg-slate-100">
-                      <img
-                        src={report.photoUrl || report.fallbackSvg}
-                        alt="Proof"
-                        className="w-full h-24 object-cover"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          if (report.fallbackSvg) e.target.src = report.fallbackSvg;
-                        }}
-                      />
+            return (
+              <Marker
+                key={report.id}
+                position={[report.latitude, report.longitude]}
+                icon={createCustomIcon('field-report', report.status)}
+              >
+                <Popup className="custom-map-popup">
+                  <div className="p-1 min-w-[240px] max-w-[280px]">
+                    <div className="flex items-center justify-between gap-1 border-b border-slate-100 pb-1.5 mb-2">
+                      <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-800 flex items-center gap-1">
+                        <Camera className="w-3 h-3 text-rose-500" />
+                        <span>{report.incidentType}</span>
+                      </span>
+                      <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full ${
+                        report.status === 'verified'
+                          ? 'bg-rose-100 text-rose-700'
+                          : (report.status === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600')
+                      }`}>
+                        {report.status.toUpperCase()}
+                      </span>
                     </div>
-                  )}
 
-                  <p className="text-[11px] text-slate-700 font-medium leading-tight mb-2">
-                    {report.description}
-                  </p>
+                    {(report.photoUrl || report.fallbackSvg) && (
+                      <div className="mb-2 rounded-lg overflow-hidden border border-slate-200 bg-slate-100">
+                        <img
+                          src={report.photoUrl || report.fallbackSvg}
+                          alt="Proof"
+                          className="w-full h-24 object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            const fallback = report.fallbackSvg || (PRESET_INCIDENT_PHOTOS.find(p => p.incidentType === report.incidentType)?.fallbackSvg) || createIncidentSVG(report.incidentType || 'HAZARD PROOF', '#ef4444', '');
+                            e.target.src = fallback;
+                          }}
+                        />
+                      </div>
+                    )}
 
-                  <div className="text-[10px] text-slate-500 space-y-0.5 bg-slate-50 p-1.5 rounded-lg border border-slate-200/60 mb-2">
-                    <div><strong>Sector:</strong> {report.nearestHighway}</div>
-                    <div><strong>GPS:</strong> {report.latitude}° N, {report.longitude}° E</div>
-                    <div><strong>Reporter:</strong> {report.reporterRole}</div>
+                    <p className="text-[11px] text-slate-700 font-medium leading-tight mb-2">
+                      {report.description}
+                    </p>
+
+                    <div className="text-[10px] text-slate-500 space-y-0.5 bg-slate-50 p-1.5 rounded-lg border border-slate-200/60 mb-2">
+                      <div><strong>Sector:</strong> {report.nearestHighway}</div>
+                      <div><strong>GPS:</strong> {report.latitude}° N, {report.longitude}° E</div>
+                      <div><strong>Reporter:</strong> {report.reporterRole}</div>
+                    </div>
+
+                    {report.status === 'pending' && (
+                      <div className="grid grid-cols-2 gap-1.5 mt-2">
+                        <button
+                          onClick={() => rejectFieldReport(report.id, 'Dismissed directly from Sentinel Map')}
+                          className="w-full py-1.5 px-2 bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-700 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1 border border-slate-200"
+                          title="Reject report (removes from map)"
+                        >
+                          <XCircle className="w-3.5 h-3.5 text-rose-500" />
+                          <span>Reject</span>
+                        </button>
+                        <button
+                          onClick={() => verifyAndBlockReport(report.id, report.linkedRoadId, `[VERIFIED EVIDENCE] ${report.incidentType}: ${report.description}`)}
+                          className="w-full py-1.5 px-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center justify-center gap-1"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Verify &amp; Block</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
-
-                  {report.status === 'pending' && (
-                    <button
-                      onClick={() => verifyAndBlockReport(report.id, report.linkedRoadId, `[VERIFIED EVIDENCE] ${report.incidentType}: ${report.description}`)}
-                      className="w-full py-1.5 px-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center justify-center gap-1"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Verify & Block Highway</span>
-                    </button>
-                  )}
-                </div>
-              </Popup>
-            </Marker>
-          );
-        })}
+                </Popup>
+              </Marker>
+            );
+          })}
 
       </MapContainer>
     </div>

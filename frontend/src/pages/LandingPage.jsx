@@ -28,7 +28,15 @@ export default function LandingPage() {
           className="flex flex-col items-center justify-center gap-3 mb-6"
         >
           <div className="w-16 h-16 rounded-2xl bg-white p-2 flex items-center justify-center shadow-md border border-slate-200/90 transition-transform hover:scale-105">
-            <img src="/logo.svg" alt="MargSetu Logo" className="w-full h-full object-contain" />
+            <img 
+              src="/logo.svg" 
+              alt="MargSetu Logo" 
+              className="w-full h-full object-contain" 
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = '/favicon.svg';
+              }}
+            />
           </div>
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm text-xs font-semibold text-slate-700">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />

@@ -9,7 +9,7 @@ export class CitizenController {
   constructor(mapManager) {
     this.mapManager = mapManager;
     this.currentRouteId = 'guwahati-shillong';
-    this.selectedReportImage = 'assets/images/landslide_nh6.jpg';
+    this.selectedReportImage = '/assets/images/landslide_nh6.jpg';
     this.currentGps = null;
   }
 

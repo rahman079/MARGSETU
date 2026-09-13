@@ -17,9 +17,9 @@ export const DEMO_PROFILES = {
   // Citizen Profiles
   citizen_assam: {
     id: 'cit-001',
-    name: 'Priyan Sharma',
+    name: 'Shayan',
     role: 'citizen',
-    email: 'priyan.sharma@gmail.com',
+    email: 'shayan07@gmail.com',
     phone: '+91 98640 12345',
     state: 'Assam',
     city: 'Guwahati / Silchar',
@@ -31,9 +31,9 @@ export const DEMO_PROFILES = {
   },
   citizen_mizoram: {
     id: 'cit-002',
-    name: 'Mary Renthlei',
+    name: 'Arham',
     role: 'citizen',
-    email: 'mary.renthlei@gmail.com',
+    email: 'arham@gmail.com',
     phone: '+91 94361 88990',
     state: 'Mizoram',
     city: 'Aizawl',
@@ -45,9 +45,9 @@ export const DEMO_PROFILES = {
   },
   citizen_arunachal: {
     id: 'cit-003',
-    name: 'Tsering Dorjee',
+    name: 'Shayan',
     role: 'citizen',
-    email: 'tsering.dorjee@gmail.com',
+    email: 'shydshayanhassan@gmail.com',
     phone: '+91 94022 55667',
     state: 'Arunachal Pradesh',
     city: 'Tawang / Dirang',
@@ -166,7 +166,7 @@ export function AuthProvider({ children }) {
       const updated = { ...prev, [roleToEnable]: true };
       try {
         sessionStorage.setItem('margsetu_guest_access', JSON.stringify(updated));
-      } catch (e) {}
+      } catch (e) { }
       return updated;
     });
   }, []);
@@ -197,7 +197,7 @@ export function AuthProvider({ children }) {
   const login = useCallback(async ({ identifier, password, role, isOtp = false }) => {
     // Check in pre-seeded demo profiles first
     const demoMatches = Object.values(DEMO_PROFILES).filter(p => p.role === role);
-    const demoMatch = demoMatches.find(p => 
+    const demoMatch = demoMatches.find(p =>
       (p.email && p.email.toLowerCase() === identifier.trim().toLowerCase()) ||
       (p.phone && p.phone.replace(/\s+/g, '') === identifier.replace(/\s+/g, '')) ||
       (p.badgeId && p.badgeId.toLowerCase() === identifier.trim().toLowerCase())
@@ -212,7 +212,7 @@ export function AuthProvider({ children }) {
     }
 
     // Check in registered users list
-    const userMatch = registeredUsers.find(u => 
+    const userMatch = registeredUsers.find(u =>
       u.role === role && (
         (u.email && u.email.toLowerCase() === identifier.trim().toLowerCase()) ||
         (u.phone && u.phone.replace(/\s+/g, '') === identifier.replace(/\s+/g, '')) ||
@@ -268,7 +268,7 @@ export function AuthProvider({ children }) {
   // 2. Citizen / Gov Registration (Sign Up)
   const signup = useCallback(async (formData, role) => {
     const isGov = role === 'govt';
-    
+
     // Construct new user profile
     const newUser = {
       id: `${isGov ? 'gov' : 'cit'}-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`,
@@ -281,7 +281,7 @@ export function AuthProvider({ children }) {
       city: formData.city || formData.district || 'Guwahati',
       category: formData.category || 'Citizen Traveler',
       vehicleNumber: formData.vehicleNumber || undefined,
-      
+
       // Govt Specific Fields
       badgeId: isGov ? (formData.badgeId || `NER-OFF-${Math.floor(100 + Math.random() * 900)}`).trim().toUpperCase() : undefined,
       department: isGov ? formData.department || 'State Disaster Management Authority' : undefined,
@@ -298,7 +298,7 @@ export function AuthProvider({ children }) {
     setUser(newUser);
 
     toast.success(`Account created successfully!`, {
-      description: isGov 
+      description: isGov
         ? `Official profile registered for ${newUser.name} (${newUser.badgeId}). Access granted.`
         : `Welcome to MargSetu, ${newUser.name}! Your citizen safety profile is ready.`
     });
@@ -319,7 +319,7 @@ export function AuthProvider({ children }) {
 
     setUser(targetProfile);
     toast.success(`Logged in as ${targetProfile.name}`, {
-      description: role === 'govt' 
+      description: role === 'govt'
         ? `Command Center active: ${targetProfile.department} (${targetProfile.badgeId})`
         : `Citizen portal active: ${targetProfile.category} (${targetProfile.state})`
     });
@@ -334,7 +334,7 @@ export function AuthProvider({ children }) {
     setGuestAccess({ citizen: false, govt: false });
     try {
       sessionStorage.removeItem('margsetu_guest_access');
-    } catch (e) {}
+    } catch (e) { }
     toast.info('Logged out successfully', {
       description: `Session closed for ${prevName}. You are now browsing in Public Guest Mode.`
     });
